@@ -1,6 +1,6 @@
 # ArchivesSpace Oauth
 
-Configure ArchivesSpace as a service provider for oauth user authentication.
+Configure ArchivesSpace as a service provider (SP) for oauth authentication.
 
 Strategies (tested or being tested =):
 
@@ -15,7 +15,7 @@ __Google is included for convenient testing with a remote IDP service.__
 
 Enabling this plugin will:
 
-- Provide an Institutional (IDP) Sign In link
+- Provide Identity Provider (IDP) Sign In link/s
 - The link will redirect the user to the IDP login portal
 - If successful the user will have a user record created in ArchivesSpace
 - User group membership and permissions are handled within ArchivesSpace
@@ -23,22 +23,29 @@ Enabling this plugin will:
 
 ## Configuration
 
-Define only one 'ASOauth' provider per ArchivesSpace instance.
-
 ```ruby
-# example for developer
-AppConfig[:authentication_sources] = [{
-  model: 'ASOauth',
-  provider: 'developer',
-  config: {},
-}]
+# example for developer and google
+AppConfig[:authentication_sources] = [
+  {
+    model: 'ASOauth',
+    provider: 'developer',
+    label: 'Sign In Developer',
+    config: {},
+  },
+  {
+    model: 'ASOauth',
+    provider: 'google_oauth2',
+    label: 'Sign In with Google',
+    config: {},
+  },
+]
 
 # add the plugin to the list
 AppConfig[:plugins] << "aspace-oauth"
 ```
 
-Change `provider` as needed and refer to the project documentation for
-configuration details.
+Add / change providers as needed and refer to the project documentation
+for configuration details.
 
 ## Developer
 

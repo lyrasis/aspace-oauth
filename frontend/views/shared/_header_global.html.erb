@@ -19,9 +19,11 @@
         <ul class="nav pull-right navbar-nav navbar-login">
           <%= render "shared/header_user" %>
           <!-- PLUGIN BEGIN -->
-          <% if AppConfig[:oauth_provider] and !session[:user] %>
-            <!-- TODO: prefixify -->
-            <li><%= link_to 'Institutional Sign In', "/auth/#{AppConfig[:oauth_provider]}" %></li>
+          <% if AppConfig[:oauth_definitions] and !session[:user] %>
+            <% AppConfig[:oauth_definitions].each do |oauth_definition| %>
+              <!-- TODO: prefixify -->
+              <li><%= link_to oauth_definition[:label], "/auth/#{oauth_definition[:provider]}" %></li>
+            <% end %>
           <% end %>
           <!-- PLUGIN END -->
           <% if ArchivesSpaceHelp.enabled? %>
