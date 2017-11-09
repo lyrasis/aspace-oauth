@@ -1,0 +1,34 @@
+<div class="container global-header">
+  <nav class="navbar">
+    <div class="container">
+
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".nav-global-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+
+      <% if !session[:user] %>
+        <button type="button" class="btn btn-default pull-right btn-collapse-login navbar-btn" data-toggle="collapse" data-target=".nav-global-collapse">
+          <%= I18n.t("navbar.login") %>
+        </button>
+      <% end %>
+      <div class="navbar-collapse nav-global-collapse collapse navbar-right navbar-default">
+        <ul class="nav pull-right navbar-nav navbar-login">
+          <%= render "shared/header_user" %>
+          <!-- PLUGIN BEGIN -->
+          <% if AppConfig[:oauth_provider] and !session[:user] %>
+            <!-- TODO: prefixify -->
+            <li><%= link_to 'Institutional Sign In', "/auth/#{AppConfig[:oauth_provider]}" %></li>
+          <% end %>
+          <!-- PLUGIN END -->
+          <% if ArchivesSpaceHelp.enabled? %>
+            <li><%= link_to_help :link_opts => {"data-placement" => (session[:user] ? "left" : "bottom")} %></li>
+          <% end %>
+        </ul>
+      </div><!-- nav-collapse -->
+    </div>
+  </nav>
+</div>
