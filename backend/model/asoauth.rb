@@ -26,11 +26,12 @@ class ASOauth
     return nil unless File.exists? id_path
 
     user = JSON.parse(File.read(id_path))["info"]
-    return nil unless username == user["name"]
+    # username param is downcased internally
+    return nil unless username == user["name"].downcase
 
     user_data = {
       username: username,
-      name:     username
+      name:     user["name"]
     }
     user_data[:email] = user["email"] if user.has_key? "email"
 
