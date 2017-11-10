@@ -12,10 +12,12 @@ class OauthController < ApplicationController
     id_path = File.join(Dir.tmpdir, id)
     File.open(id_path, 'w') { |f| f.write(JSON.generate(auth_hash)) }
 
-    backend_session = User.login(auth_hash[:info][:name], id)
+    # usernames cannot be email addresses
+    username = auth_hash[:info][:email].split('@')[0]
+    backend_session = User.login(username, id)
 
     if backend_session
-      User.establish_session(self, backend_session, auth_hash[:info][:name])
+      User.establish_session(self, backend_session, username)
       load_repository_list
     else
       flash[:error] = "Authentication error, unable to login."

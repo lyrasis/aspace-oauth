@@ -24,7 +24,7 @@ Enabling this plugin will:
 ## Configuration
 
 ```ruby
-# example for developer and google
+# example for testing from src: developer, google, saml
 AppConfig[:authentication_sources] = [
   {
     model: 'ASOauth',
@@ -38,6 +38,18 @@ AppConfig[:authentication_sources] = [
     label: 'Sign In with Google',
     config: {},
   },
+  {
+    model: 'ASOauth',
+    provider: 'saml',
+    label: 'Institutional Sign In',
+    config: {
+      :assertion_consumer_service_url     => "http://localhost:3000/auth/saml/callback",
+      :issuer                             => "http://localhost:3000",
+      :idp_sso_target_url                 => "http://localhost/simplesaml/saml2/idp/SSOService.php",
+      :idp_cert_fingerprint               => "119b9e027959cdb7c662cfd075d9e2ef384e445f",
+      :idp_cert_fingerprint_validator     => lambda { |fingerprint| fingerprint },
+      :name_identifier_format             => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
+    },
 ]
 
 # add the plugin to the list
@@ -46,6 +58,18 @@ AppConfig[:plugins] << "aspace-oauth"
 
 Add / change providers as needed and refer to the project documentation
 for configuration details.
+
+For testing SAML there is a helpful docker image:
+
+```bash
+docker run --name=test-saml-idp -d \
+  --net=host \
+  -e SIMPLESAMLPHP_SP_ENTITY_ID=http://localhost:3000 \
+  -e SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localhost:3000/auth/saml/callback \
+  kristophjunge/test-saml-idp
+```
+
+The test SAML service will be available at: `http://localhost`.
 
 ## Developer
 

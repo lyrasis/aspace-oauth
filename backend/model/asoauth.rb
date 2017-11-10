@@ -26,15 +26,13 @@ class ASOauth
     return nil unless File.exists? id_path
 
     user = JSON.parse(File.read(id_path))["info"]
-    # username param is downcased internally
-    return nil unless username == user["name"].downcase
+    return nil unless username == user["email"].split('@')[0]
 
     user_data = {
       username: username,
-      name:     user["name"]
+      name:     user["name"],
+      email:    user["email"],
     }
-    user_data[:email] = user["email"] if user.has_key? "email"
-
     JSONModel(:user).from_hash(user_data)
   end
 
