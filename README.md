@@ -50,6 +50,22 @@ AppConfig[:authentication_sources] = [
       :idp_cert_fingerprint_validator     => lambda { |fingerprint| fingerprint },
       :name_identifier_format             => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
     },
+   {                                                                                                                                                                                 
+        model: 'ASOauth',                                                                                                                                                           
+        provider: 'cas',                                                                                                                                                            
+        label: 'CAS Sign In',                                                                                                                                                        
+        config: {                                                              
+          url: 'https://login.ivory-tower.edu',                                                                                                                                             
+          host: 'login.ivory-tower.edu',                                                                                                                                                    
+          ssl: true,                                                                                                                                                                
+          login_url: '/cas/login',                                                                                                                                                  
+          logout_url: '/cas/logout',                                                                                                                                                
+          service_validate_url: '/cas/serviceValidate',                                                                                                                             
+          # if your server does not return an email address, you can add one
+          # here using the fetch_raw_info option. 
+          fetch_raw_info: ->(s, o, t, user_info) {  { email: "#{user_info['user']}@ivory-tower.edu" } } 
+        }                                                                                                                                                                           
+  }  
 ]
 
 # add the plugin to the list
