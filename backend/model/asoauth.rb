@@ -25,7 +25,10 @@ class ASOauth
     id_path = File.join(Dir.tmpdir, password)
     return nil unless File.exists? id_path
 
-    user = JSON.parse(File.read(id_path))["info"]
+    json = JSON.parse(File.read(id_path))
+    user = json["info"]
+    # if theres no email check the exta field
+    user["email"] ||= json["extra"]["email"]
     return nil unless username == user["email"].split('@')[0]
 
     user_data = {

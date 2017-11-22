@@ -13,7 +13,11 @@ class OauthController < ApplicationController
     File.open(id_path, 'w') { |f| f.write(JSON.generate(auth_hash)) }
 
     # usernames cannot be email addresses
-    username = auth_hash[:info][:email].split('@')[0]
+    username = if auth_hash[:info].has_key?(:email)
+                 auth_hash[:info][:email].split('@')[0]
+              else
+                 auth_hash[:extra][:email].split('@')[0]
+              end
     backend_session = User.login(username, id)
 
     if backend_session

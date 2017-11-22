@@ -54,13 +54,16 @@ AppConfig[:authentication_sources] = [
         model: 'ASOauth',                                                                                                                                                           
         provider: 'cas',                                                                                                                                                            
         label: 'CAS Sign In',                                                                                                                                                        
-        config: {                                                                                                                                                                   
-          url: 'https://login.your.institution.edu',                                                                                                                                             
-          host: 'login.your.institution.edu',                                                                                                                                                    
+        config: {                                                              
+          url: 'https://login.ivory-tower.edu',                                                                                                                                             
+          host: 'login.ivory-tower.edu',                                                                                                                                                    
           ssl: true,                                                                                                                                                                
           login_url: '/cas/login',                                                                                                                                                  
           logout_url: '/cas/logout',                                                                                                                                                
           service_validate_url: '/cas/serviceValidate',                                                                                                                             
+          # if your server does not return an email address, you can add one
+          # here using the fetch_raw_info option. 
+          fetch_raw_info: ->(s, o, t, user_info) {  { email: "#{user_info['user']}@ivory-tower.edu" } } 
         }                                                                                                                                                                           
   }  
 ]
