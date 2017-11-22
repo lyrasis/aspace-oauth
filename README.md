@@ -50,6 +50,19 @@ AppConfig[:authentication_sources] = [
       :idp_cert_fingerprint_validator     => lambda { |fingerprint| fingerprint },
       :name_identifier_format             => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
     },
+   {                                                                                                                                                                                 
+        model: 'ASOauth',                                                                                                                                                           
+        provider: 'cas',                                                                                                                                                            
+        label: 'CAS Sign In',                                                                                                                                                        
+        config: {                                                                                                                                                                   
+          url: 'https://login.your.institution.edu',                                                                                                                                             
+          host: 'login.your.institution.edu',                                                                                                                                                    
+          ssl: true,                                                                                                                                                                
+          login_url: '/cas/login',                                                                                                                                                  
+          logout_url: '/cas/logout',                                                                                                                                                
+          service_validate_url: '/cas/serviceValidate',                                                                                                                             
+        }                                                                                                                                                                           
+  }  
 ]
 
 # add the plugin to the list
