@@ -21,6 +21,25 @@ Enabling this plugin will:
 - User group membership and permissions are handled within ArchivesSpace
 - The oauth plugin handles authentication only
 
+## Installation
+
+Download this plugin to `$ARCHIVESSPACE_DIR/plugins` and initialize it:
+
+```bash
+cd /path/to/archivesspace/plugins
+# with wget and unzip
+wget https://github.com/lyrasis/aspace-oauth/archive/master.zip
+unzip master.zip
+mv aspace-oauth-master aspace-oauth
+
+# or with git
+git clone https://github.com/lyrasis/aspace-oauth.git
+
+# now download the gems
+cd /path/to/archivesspace
+./scripts/initialize-plugin.sh aspace-oauth
+```
+
 ## Configuration
 
 ```ruby
