@@ -65,12 +65,12 @@ AppConfig[:authentication_sources] = [
     # metadata_parser_url: "https://login.somewhere.edu:4443/idp/shibboleth",
     config: {
       :assertion_consumer_service_url     => "http://localhost:3000/auth/saml/callback",
-      :issuer                             => "http://localhost:3000",
+      :issuer                             => "http://localhost:3000/auth/saml/metadata",
+      :name_identifier_format             => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
       # THESE ARE NOT REQUIRED IF USING METADATA URL
       :idp_sso_target_url                 => "http://localhost/simplesaml/saml2/idp/SSOService.php",
       :idp_cert_fingerprint               => "119b9e027959cdb7c662cfd075d9e2ef384e445f",
       :idp_cert_fingerprint_validator     => lambda { |fingerprint| fingerprint },
-      :name_identifier_format             => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
     }
   },
   {
