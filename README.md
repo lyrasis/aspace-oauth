@@ -61,30 +61,34 @@ AppConfig[:authentication_sources] = [
     model: 'ASOauth',
     provider: 'saml',
     label: 'Institutional Sign In',
+    # METADATA URL: optional, use to download configuration
+    # metadata_parser_url: "https://login.somewhere.edu:4443/idp/shibboleth",
     config: {
       :assertion_consumer_service_url     => "http://localhost:3000/auth/saml/callback",
       :issuer                             => "http://localhost:3000",
+      # THESE ARE NOT REQUIRED IF USING METADATA URL
       :idp_sso_target_url                 => "http://localhost/simplesaml/saml2/idp/SSOService.php",
       :idp_cert_fingerprint               => "119b9e027959cdb7c662cfd075d9e2ef384e445f",
       :idp_cert_fingerprint_validator     => lambda { |fingerprint| fingerprint },
       :name_identifier_format             => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
-    },
-   {                                                                                                                                                                                 
-        model: 'ASOauth',                                                                                                                                                           
-        provider: 'cas',                                                                                                                                                            
-        label: 'CAS Sign In',                                                                                                                                                        
-        config: {                                                              
-          url: 'https://login.ivory-tower.edu',                                                                                                                                             
-          host: 'login.ivory-tower.edu',                                                                                                                                                    
-          ssl: true,                                                                                                                                                                
-          login_url: '/cas/login',                                                                                                                                                  
-          logout_url: '/cas/logout',                                                                                                                                                
-          service_validate_url: '/cas/serviceValidate',                                                                                                                             
-          # if your server does not return an email address, you can add one
-          # here using the fetch_raw_info option. 
-          fetch_raw_info: ->(s, o, t, user_info) {  { email: "#{user_info['user']}@ivory-tower.edu" } } 
-        }                                                                                                                                                                           
-  }  
+    }
+  },
+  {
+    model: 'ASOauth',
+    provider: 'cas',
+    label: 'CAS Sign In',                                        
+    config: {                                                        
+      url: 'https://login.ivory-tower.edu',
+      host: 'login.ivory-tower.edu',
+      ssl: true,                                         
+      login_url: '/cas/login',
+      logout_url: '/cas/logout',
+      service_validate_url: '/cas/serviceValidate',
+      # if your server does not return an email address, you can add one
+      # here using the fetch_raw_info option.
+      fetch_raw_info: ->(s, o, t, user_info) {  { email: "#{user_info['user']}@ivory-tower.edu" } }
+    }
+  }
 ]
 
 # add the plugin to the list
