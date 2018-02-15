@@ -27,7 +27,15 @@ Rails.application.config.middleware.use OmniAuth::Builder do
         access_type: 'online',
         prompt: ''
     else
-      provider oauth_definition[:provider], oauth_definition[:config]
+      config = oauth_definition[:config]
+      if oauth_definition.has_key? :metadata_parser_url
+        idp_metadata_parser = OneLogin::RubySaml::IdpMetadataParser.new
+        idp_metadata        = idp_metadata_parser.parse_remote_to_hash(oauth_definition[:metadata_parser_url])
+
+        config = idp_metadata.merge(config)
+      end
+      provider oauth_definition[:provider], config
+      $stdout.puts "\n\n\nREGISTERED OAUTH PROVIDER WITH CONFIG: #{config}\n\n\n"
     end
   end
 end
