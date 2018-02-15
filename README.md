@@ -1,6 +1,7 @@
 # ArchivesSpace Oauth
 
 Configure ArchivesSpace as a service provider (SP) for oauth authentication.
+*The plugin delegates authentication to the configured identity provider (IDP).*
 
 Strategies (tested or being tested =):
 
@@ -19,7 +20,7 @@ Enabling this plugin will:
 - The link will redirect the user to the IDP login portal
 - If successful the user will have a user record created in ArchivesSpace
 - User group membership and permissions are handled within ArchivesSpace
-- The oauth plugin handles authentication only
+- The oauth plugin handles (by delegating) authentication only
 
 ## Installation
 
