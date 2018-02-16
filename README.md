@@ -68,6 +68,9 @@ AppConfig[:authentication_sources] = [
       :assertion_consumer_service_url     => "http://localhost:3000/auth/saml/callback",
       :issuer                             => "http://localhost:3000/auth/saml/metadata",
       :name_identifier_format             => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
+      # OPTIONAL: for encrypted assertions
+      :certificate                        => "PUBLIC CERT",
+      :private_key                        => "PRIVATE KEY",
       # THESE ARE NOT REQUIRED IF USING METADATA URL
       :idp_sso_target_url                 => "http://localhost/simplesaml/saml2/idp/SSOService.php",
       :idp_cert_fingerprint               => "119b9e027959cdb7c662cfd075d9e2ef384e445f",
@@ -110,6 +113,14 @@ docker run --name=test-saml-idp -d \
 ```
 
 The test SAML service will be available at: `http://localhost`.
+
+## SAML
+
+To generate a cert / key use a command like:
+
+```bash
+openssl req -new -x509 -days 365 -nodes -sha256 -out saml.crt -keyout saml.pem
+```
 
 ## Developer
 
