@@ -34,6 +34,12 @@ Rails.application.config.middleware.use OmniAuth::Builder do
 
         config = idp_metadata.merge(config)
       end
+      if config.has_key? :security
+        # replace strings with constants for *_method
+        [:digest_method, :signature_method].each do |m|
+          config[:security][m] = config[:security][m].constantize if config[:security].has_key? m
+        end
+      end
       provider oauth_definition[:provider], config
       $stdout.puts "\n\n\nREGISTERED OAUTH PROVIDER WITH CONFIG: #{config}\n\n\n"
     end

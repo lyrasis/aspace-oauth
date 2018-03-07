@@ -68,13 +68,23 @@ AppConfig[:authentication_sources] = [
       :assertion_consumer_service_url     => "http://localhost:3000/auth/saml/callback",
       :issuer                             => "http://localhost:3000/auth/saml/metadata",
       :name_identifier_format             => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
-      # OPTIONAL: for encrypted assertions
-      :certificate                        => "PUBLIC CERT",
-      :private_key                        => "PRIVATE KEY",
       # THESE ARE NOT REQUIRED IF USING METADATA URL
       :idp_sso_target_url                 => "http://localhost/simplesaml/saml2/idp/SSOService.php",
       :idp_cert_fingerprint               => "119b9e027959cdb7c662cfd075d9e2ef384e445f",
       :idp_cert_fingerprint_validator     => lambda { |fingerprint| fingerprint },
+      # OPTIONAL: for encrypted assertions
+      :certificate                        => "PUBLIC CERT",
+      :private_key                        => "PRIVATE KEY",
+      # OPTIONAL: may be required by IDP (used with certificate and private_key)
+      :security                           => {
+        authn_requests_signed:  true,
+        want_assertions_signed: true,
+        metadata_signed:        true,
+        # XMLSecurity::Document strings for digest and signature will be resolved to constant
+        digest_method:          "XMLSecurity::Document::SHA256",
+        signature_method:       "XMLSecurity::Document::RSA_SHA256",
+        embed_sign:             true,
+      },
     }
   },
   {
