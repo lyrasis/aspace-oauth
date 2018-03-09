@@ -26,10 +26,7 @@ class ASOauth
     return nil unless File.exists? id_path
 
     json = JSON.parse(File.read(id_path))
-    user = json["info"]
-    # if theres no email check the exta field
-    user["email"] ||= json["extra"]["email"]
-    return nil unless username == user["email"].split('@')[0]
+    return nil unless username == json["info"]["email"].split('@')[0]
 
     user_data = {
       username: username,
