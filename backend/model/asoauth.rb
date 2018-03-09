@@ -25,13 +25,13 @@ class ASOauth
     id_path = File.join(Dir.tmpdir, password)
     return nil unless File.exists? id_path
 
-    json = JSON.parse(File.read(id_path))
-    return nil unless username == json["info"]["email"].split('@')[0]
+    info = JSON.parse(File.read(id_path))["info"]
+    return nil unless username == info["email"].split('@')[0]
 
     user_data = {
       username: username,
-      name:     user["name"],
-      email:    user["email"],
+      name:     info["name"],
+      email:    info["email"],
     }
     JSONModel(:user).from_hash(user_data)
   end
