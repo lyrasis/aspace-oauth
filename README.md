@@ -86,6 +86,9 @@ AppConfig[:authentication_sources] = [
         signature_method:          "XMLSecurity::Document::RSA_SHA256",
         embed_sign:                true,
       },
+      :attribute_statements => {
+        email: ["urn:oid:0.9.2342.19200300.100.1.3"],
+      },
     }
   },
   {
