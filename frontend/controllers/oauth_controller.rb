@@ -10,15 +10,19 @@ class OauthController < ApplicationController
   def create
     id      = "aspace-oauth-#{auth_hash[:provider]}-#{SecureRandom.uuid}"
     id_path = File.join(Dir.tmpdir, id)
-    File.open(id_path, 'w') { |f| f.write(JSON.generate(auth_hash)) }
+    puts "Received callback for: #{id}"
+    backend_session = nil
 
-    # usernames cannot be email addresses
-    username = if auth_hash[:info].has_key?(:email)
-                 auth_hash[:info][:email].split('@')[0]
-              else
-                 auth_hash[:extra][:email].split('@')[0]
-              end
-    backend_session = User.login(username, id)
+    email = get_email auth_hash
+    if email
+      # ensure this is set regardless of how, required by the backend
+      auth_hash[:info][:email] ||= email
+      File.open(id_path, 'w') { |f| f.write(JSON.generate(auth_hash)) }
+
+      # usernames cannot be email addresses
+      username        = email.split('@')[0]
+      backend_session = User.login(username, id)
+    end
 
     if backend_session
       User.establish_session(self, backend_session, username)
@@ -40,6 +44,20 @@ class OauthController < ApplicationController
 
   def auth_hash
     request.env['omniauth.auth']
+  end
+
+  def get_email(auth)
+    email = nil
+    if auth[:info].has_key?(:email) and !auth[:info][:email].nil?
+      email = auth[:info][:email]
+    elsif auth[:extra].has_key?(:email) and !auth[:extra][:email].nil?
+      email = auth[:extra][:email]
+    elsif auth[:extra].has_key?(:response_object)
+      if auth[:extra][:response_object].name_id
+        email = auth[:extra][:response_object].name_id
+      end
+    end
+    email
   end
 
 end
