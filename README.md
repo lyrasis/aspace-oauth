@@ -134,7 +134,8 @@ The test SAML service will be available at: `http://localhost`.
 To generate a cert / key use a command like:
 
 ```bash
-openssl req -new -x509 -days 365 -nodes -sha256 -out saml.crt -keyout saml.pem
+openssl genrsa -out rsaprivkey.pem 2048
+openssl req -new -x509 -key rsaprivkey.pem -out rsacert.pem
 ```
 
 ## Developer
