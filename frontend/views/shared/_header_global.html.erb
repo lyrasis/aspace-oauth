@@ -22,7 +22,7 @@
           <% if AppConfig[:oauth_definitions] and !session[:user] %>
             <% AppConfig[:oauth_definitions].each do |oauth_definition| %>
               <!-- TODO: prefixify -->
-              <li><%= link_to oauth_definition[:label], "/auth/#{oauth_definition[:provider]}" %></li>
+              <li><%= link_to oauth_definition[:label], "#{AppConfig[:frontend_proxy_prefix]}auth/#{oauth_definition[:provider]}" %></li>
             <% end %>
           <% end %>
           <!-- PLUGIN END -->
