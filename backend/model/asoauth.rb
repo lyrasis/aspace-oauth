@@ -36,4 +36,19 @@ class ASOauth
     JSONModel(:user).from_hash(user_data)
   end
 
+  def matching_usernames(query)
+    DB.open do |db|
+      query = query.gsub(/[%]/, '').downcase
+      db[:user].
+         filter(Sequel.~(:is_system_user => 1)).
+         filter(Sequel.like(
+           Sequel.function(:lower, :username), "#{query}%"
+         )).
+         filter(Sequel.like(:source, name)).
+        select(:username).
+        limit(AppConfig[:max_usernames_per_source].to_i).
+        map {|row| row[:username]}
+    end
+  end
+
 end
