@@ -1,3 +1,4 @@
+require_relative 'lib/aspace_oauth'
 oauth_definitions = AppConfig[:authentication_sources].find_all { |as|
   as[:model] == 'ASOauth'
 }

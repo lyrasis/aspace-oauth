@@ -1,5 +1,4 @@
 class OauthController < ApplicationController
-
   skip_before_action :unauthorised_access
   skip_before_action :verify_authenticity_token
 
@@ -38,6 +37,11 @@ class OauthController < ApplicationController
   def failure
     flash[:error] = params[:message]
     redirect_to :controller => :welcome, :action => :index
+  end
+
+  def cas_logout
+    reset_session
+    redirect_to AspaceOauth.cas_logout_url
   end
 
   protected
