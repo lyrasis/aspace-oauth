@@ -21,7 +21,6 @@
           <!-- PLUGIN BEGIN -->
           <% if AppConfig[:oauth_definitions] and !session[:user] %>
             <% AppConfig[:oauth_definitions].each do |oauth_definition| %>
-              <!-- TODO: prefixify -->
               <li><%= link_to oauth_definition[:label], "#{AppConfig[:frontend_proxy_prefix]}auth/#{oauth_definition[:provider]}" %></li>
             <% end %>
           <% end %>
@@ -34,3 +33,13 @@
     </div>
   </nav>
 </div>
+<!-- PLUGIN BEGIN -->
+<% if session[:user] and get_oauth_cas_config %>
+<script type="text/javascript">
+  (function() {
+    var logout = $('a[href~="/logout"]').parent().parent();
+    logout.append('<li><a href="<%= cas_logout_url %>">CAS Logout</a></li>');
+  })();
+</script>
+<% end %>
+<!-- PLUGIN END -->
