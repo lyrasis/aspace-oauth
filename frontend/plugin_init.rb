@@ -1,22 +1,8 @@
+require_relative 'lib/aspace_oauth'
 oauth_definitions = AppConfig[:authentication_sources].find_all { |as|
   as[:model] == 'ASOauth'
 }
 raise "OmniAuth plugin enabled but no definitions provided =(" unless oauth_definitions.any?
-
-def cas_logout_url
-  config = get_oauth_cas_config
-  return unless config
-  params = { service: AppConfig[:frontend_proxy_url] }
-  URI::HTTPS.build(
-    host: config[:config][:url].gsub(/https?:\/\//, ''),
-    path: config[:config][:logout_url],
-    query: URI.encode_www_form(params)
-  )
-end
-
-def get_oauth_cas_config
-  AppConfig[:oauth_definitions].find { |oauth| oauth[:provider] == 'cas' }
-end
 
 # GOOGLE STRATEGY FOR TESTING [DO NOT USE IN PROD UNLESS YOU MEAN TO]
 def google_oauth_enabled?

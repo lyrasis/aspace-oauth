@@ -34,11 +34,11 @@
   </nav>
 </div>
 <!-- PLUGIN BEGIN -->
-<% if session[:user] and get_oauth_cas_config %>
+<% if session[:user] and AspaceOauth.get_oauth_cas_config %>
 <script type="text/javascript">
   (function() {
     var logout = $('a[href~="/logout"]').parent().parent();
-    logout.append('<li><a href="<%= cas_logout_url %>">CAS Logout</a></li>');
+    logout.append('<li><%= link_to('CAS Logout', "#{AppConfig[:frontend_proxy_prefix]}auth/cas_logout") %></li>');
   })();
 </script>
 <% end %>

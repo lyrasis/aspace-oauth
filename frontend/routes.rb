@@ -8,6 +8,7 @@ ArchivesSpace::Application.routes.draw do
     get  '/auth/:provider/callback', to: 'oauth#create'
     post '/auth/:provider/callback', to: 'oauth#create'
     get  '/auth/failure',            to: 'oauth#failure'
+    get  '/auth/cas_logout',         to: 'oauth#cas_logout'
   end
 
 end
