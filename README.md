@@ -8,6 +8,7 @@ Strategies (tested or being tested =):
 - [CAS](https://github.com/dlindahl/omniauth-cas)
 - Developer [built-in for testing]
 - [Google](https://github.com/zquestz/omniauth-google-oauth2)
+- [Okta](https://github.com/dandrews/omniauth-okta)
 - [SAML](https://github.com/omniauth/omniauth-saml)
 
 __Google is included for convenient testing with a remote IDP service.__
@@ -60,6 +61,36 @@ AppConfig[:authentication_sources] = [
   },
   {
     model: 'ASOauth',
+    provider: 'cas',
+    label: 'CAS Sign In',
+    config: {
+      url: 'https://login.ivory-tower.edu',
+      host: 'login.ivory-tower.edu',
+      ssl: true,
+      login_url: '/cas/login',
+      logout_url: '/cas/logout',
+      service_validate_url: '/cas/serviceValidate',
+      # if your server does not return an email address, you can add one
+      # here using the fetch_raw_info option.
+      fetch_raw_info: ->(s, o, t, user_info) {  { email: "#{user_info['user']}@ivory-tower.edu" } }
+    }
+  },
+  {
+    model: 'ASOauth',
+    provider: 'okta',
+    label: 'Okta Sign In',
+    config: {
+      :scope => 'openid profile email',
+      :fields => ['profile', 'email'],
+      :client_options => {
+        :site =>          'https://your-org.okta.com',
+        :authorize_url => 'https://your-org.okta.com/oauth2/v1/authorize',
+        :token_url =>     'https://your-org.okta.com/oauth2/v1/token'
+      }
+    }
+  },
+  {
+    model: 'ASOauth',
     provider: 'saml',
     label: 'Institutional Sign In',
     # METADATA URL: optional, use to download configuration
@@ -89,22 +120,6 @@ AppConfig[:authentication_sources] = [
       :attribute_statements => {
         email: ["urn:oid:0.9.2342.19200300.100.1.3"],
       },
-    }
-  },
-  {
-    model: 'ASOauth',
-    provider: 'cas',
-    label: 'CAS Sign In',                                        
-    config: {                                                        
-      url: 'https://login.ivory-tower.edu',
-      host: 'login.ivory-tower.edu',
-      ssl: true,                                         
-      login_url: '/cas/login',
-      logout_url: '/cas/logout',
-      service_validate_url: '/cas/serviceValidate',
-      # if your server does not return an email address, you can add one
-      # here using the fetch_raw_info option.
-      fetch_raw_info: ->(s, o, t, user_info) {  { email: "#{user_info['user']}@ivory-tower.edu" } }
     }
   }
 ]

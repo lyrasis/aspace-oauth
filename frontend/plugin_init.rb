@@ -27,6 +27,11 @@ Rails.application.config.middleware.use OmniAuth::Builder do
         ENV['GOOGLE_CLIENT_SECRET'],
         access_type: 'online',
         prompt: ''
+    elsif oauth_definition[:provider] == 'okta'
+      provider :okta,
+        ENV['OKTA_CLIENT_ID'],
+        ENV['OKTA_CLIENT_SECRET'],
+        oauth_definition[:config]
     else
       config = oauth_definition[:config]
       if oauth_definition.has_key? :metadata_parser_url
