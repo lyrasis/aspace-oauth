@@ -50,18 +50,21 @@ AppConfig[:authentication_sources] = [
     model: 'ASOauth',
     provider: 'developer',
     label: 'Sign In Developer',
+    slo_link: false,
     config: {},
   },
   {
     model: 'ASOauth',
     provider: 'google_oauth2',
     label: 'Sign In with Google',
+    slo_link: false,
     config: {},
   },
   {
     model: 'ASOauth',
     provider: 'saml',
     label: 'Institutional Sign In',
+    slo_link: false,
     # METADATA URL: optional, use to download configuration
     # metadata_parser_url: "https://login.somewhere.edu:4443/idp/shibboleth",
     config: {
@@ -94,11 +97,12 @@ AppConfig[:authentication_sources] = [
   {
     model: 'ASOauth',
     provider: 'cas',
-    label: 'CAS Sign In',                                        
-    config: {                                                        
+    label: 'CAS Sign In',
+    slo_link: true,
+    config: {
       url: 'https://login.ivory-tower.edu',
       host: 'login.ivory-tower.edu',
-      ssl: true,                                         
+      ssl: true,
       login_url: '/cas/login',
       logout_url: '/cas/logout',
       service_validate_url: '/cas/serviceValidate',
