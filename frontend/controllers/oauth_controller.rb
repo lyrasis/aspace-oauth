@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class OauthController < ApplicationController
   skip_before_action :unauthorised_access
   skip_before_action :verify_authenticity_token
@@ -7,36 +9,36 @@ class OauthController < ApplicationController
   # that is written to the system tmpdir. This is used to verify
   # the user for the backend and then deleted.
   def create
-    id      = "aspace-oauth-#{auth_hash[:provider]}-#{SecureRandom.uuid}"
-    id_path = File.join(Dir.tmpdir, id)
-    puts "Received callback for: #{id}"
+    pw      = "aspace-oauth-#{auth_hash[:provider]}-#{SecureRandom.uuid}"
+    pw_path = File.join(Dir.tmpdir, pw)
     backend_session = nil
 
-    email = get_email auth_hash
-    if email
-      # ensure this is set regardless of how, required by the backend
-      auth_hash[:info][:email] ||= email
-      File.open(id_path, 'w') { |f| f.write(JSON.generate(auth_hash)) }
-
-      # usernames cannot be email addresses
-      username        = email.split('@')[0]
-      backend_session = User.login(username, id)
+    uid = auth_hash.uid
+    email = AspaceOauth.get_email(auth_hash)
+    username = AspaceOauth.use_uid? ? uid : email
+    puts "Received callback for: [uid: #{uid}], [email: #{email}]"
+    if username && email
+      username = username.split('@')[0] # usernames cannot be email addresses
+      auth_hash[:info][:username] = username # set username, checked in backend
+      auth_hash[:info][:email] = email # ensure email is set in info
+      File.open(pw_path, 'w') { |f| f.write(JSON.generate(auth_hash)) }
+      backend_session = User.login(username, pw)
     end
 
     if backend_session
       User.establish_session(self, backend_session, username)
       load_repository_list
     else
-      flash[:error] = "Authentication error, unable to login."
+      flash[:error] = 'Authentication error, unable to login.'
     end
 
-    File.delete id_path if File.exists? id_path
-    redirect_to :controller => :welcome, :action => :index
+    File.delete pw_path if File.exist? pw_path
+    redirect_to controller: :welcome, action: :index
   end
 
   def failure
     flash[:error] = params[:message]
-    redirect_to :controller => :welcome, :action => :index
+    redirect_to controller: :welcome, action: :index
   end
 
   def cas_logout
@@ -54,19 +56,4 @@ class OauthController < ApplicationController
   def auth_hash
     request.env['omniauth.auth']
   end
-
-  def get_email(auth)
-    email = nil
-    if auth[:info].has_key?(:email) and !auth[:info][:email].nil?
-      email = auth[:info][:email]
-    elsif auth[:extra].has_key?(:email) and !auth[:extra][:email].nil?
-      email = auth[:extra][:email]
-    elsif auth[:extra].has_key?(:response_object)
-      if auth[:extra][:response_object].name_id
-        email = auth[:extra][:response_object].name_id
-      end
-    end
-    email
-  end
-
 end

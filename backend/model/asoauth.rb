@@ -1,12 +1,12 @@
+# frozen_string_literal: true
+
 class ASOauthException < StandardError
 end
 
 class ASOauth
-
   include JSONModel
 
   def initialize(definition)
-    @config   = definition[:config]
     @provider = definition[:provider]
   end
 
@@ -22,33 +22,31 @@ class ASOauth
   def authenticate(username, password)
     return nil unless password.start_with?("aspace-oauth-#{@provider}")
 
-    id_path = File.join(Dir.tmpdir, password)
-    return nil unless File.exists? id_path
+    pw_path = File.join(Dir.tmpdir, password)
+    return nil unless File.exist? pw_path
 
-    info = JSON.parse(File.read(id_path))["info"]
-    return nil unless username == info["email"].split('@')[0]
+    info = JSON.parse(File.read(pw_path))['info']
+    return nil unless username == info['username']
 
-    user_data = {
+    JSONModel(:user).from_hash(
       username: username,
-      name:     info["name"],
-      email:    info["email"],
-    }
-    JSONModel(:user).from_hash(user_data)
+      name: info['name'],
+      email: info['email']
+    )
   end
 
   def matching_usernames(query)
     DB.open do |db|
       query = query.gsub(/[%]/, '').downcase
-      db[:user].
-         filter(Sequel.~(:is_system_user => 1)).
-         filter(Sequel.like(
-           Sequel.function(:lower, :username), "#{query}%"
-         )).
-         filter(Sequel.like(:source, name)).
-        select(:username).
-        limit(AppConfig[:max_usernames_per_source].to_i).
-        map {|row| row[:username]}
+      db[:user]
+        .filter(Sequel.~(is_system_user: 1))
+        .filter(Sequel.like(
+                  Sequel.function(:lower, :username), "#{query}%"
+                ))
+        .filter(Sequel.like(:source, name))
+        .select(:username)
+        .limit(AppConfig[:max_usernames_per_source].to_i)
+        .map { |row| row[:username] }
     end
   end
-
 end

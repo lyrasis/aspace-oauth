@@ -3,14 +3,11 @@
 Configure ArchivesSpace as a service provider (SP) for oauth authentication.
 *The plugin delegates authentication to the configured identity provider (IDP).*
 
-Strategies (tested or being tested =):
+Strategies tested:
 
 - [CAS](https://github.com/dlindahl/omniauth-cas)
 - Developer [built-in for testing]
-- [Google](https://github.com/zquestz/omniauth-google-oauth2)
 - [SAML](https://github.com/omniauth/omniauth-saml)
-
-__Google is included for convenient testing with a remote IDP service.__
 
 ## Overview
 
@@ -44,19 +41,12 @@ cd /path/to/archivesspace
 ## Configuration
 
 ```ruby
-# example for testing from src: developer, google, saml
+# example for testing from src: developer, saml
 AppConfig[:authentication_sources] = [
   {
     model: 'ASOauth',
     provider: 'developer',
     label: 'Sign In Developer',
-    slo_link: false,
-    config: {},
-  },
-  {
-    model: 'ASOauth',
-    provider: 'google_oauth2',
-    label: 'Sign In with Google',
     slo_link: false,
     config: {},
   },
