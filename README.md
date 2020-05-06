@@ -106,6 +106,10 @@ AppConfig[:authentication_sources] = [
       login_url: '/cas/login',
       logout_url: '/cas/logout',
       service_validate_url: '/cas/serviceValidate',
+      uid_key: 'user',
+      email_key: 'email'
+      # more cas keys and options at: https://github.com/dlindahl/omniauth-cas
+      #
       # if your server does not return an email address, you can add one
       # here using the fetch_raw_info option.
       fetch_raw_info: ->(s, o, t, user_info) {  { email: "#{user_info['user']}@ivory-tower.edu" } }
