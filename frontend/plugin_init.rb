@@ -21,6 +21,7 @@ require 'omniauth-google-oauth2' if google_oauth_enabled?
 
 Rails.application.config.middleware.use OmniAuth::Builder do
   oauth_definitions.each do |oauth_definition|
+    verify_ssl = oauth_definition.fetch(:verify_ssl, true)
     if oauth_definition[:provider] == 'google_oauth2'
       provider :google_oauth2,
         ENV['GOOGLE_CLIENT_ID'],
@@ -31,7 +32,10 @@ Rails.application.config.middleware.use OmniAuth::Builder do
       config = oauth_definition[:config]
       if oauth_definition.has_key? :metadata_parser_url
         idp_metadata_parser = OneLogin::RubySaml::IdpMetadataParser.new
-        idp_metadata        = idp_metadata_parser.parse_remote_to_hash(oauth_definition[:metadata_parser_url])
+        idp_metadata        = idp_metadata_parser.parse_remote_to_hash(
+          oauth_definition[:metadata_parser_url],
+          verify_ssl
+        )
 
         config = idp_metadata.merge(config)
       end
