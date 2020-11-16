@@ -1,5 +1,6 @@
-ArchivesSpace::Application.routes.draw do
+# frozen_string_literal: true
 
+ArchivesSpace::Application.routes.draw do
   scope AppConfig[:frontend_proxy_prefix] do
     # OMNIAUTH GENERATED ROUTES:
     # OMNIAUTH:      /auth/:provider
@@ -13,5 +14,4 @@ ArchivesSpace::Application.routes.draw do
     get  '/auth/cas_logout',         to: 'oauth#cas_logout'
     get  '/auth/saml_logout',        to: 'oauth#saml_logout'
   end
-
 end
