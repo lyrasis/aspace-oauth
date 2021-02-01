@@ -31,7 +31,11 @@ class ASOauth
     JSONModel(:user).from_hash(
       username: username,
       name: info['name'],
-      email: info['email']
+      email: info['email'],
+      first_name: info['first_name'],
+      last_name: info['last_name'],
+      telephone: info['phone'],
+      additional_contact: info['description']
     )
   end
 
