@@ -16,9 +16,11 @@ class OauthController < ApplicationController
     uid = auth_hash.uid
     email = AspaceOauth.get_email(auth_hash)
     username = AspaceOauth.use_uid? ? uid : email
-    puts "Received callback for: [uid: #{uid}], [email: #{email}]"
+    puts "Received callback for user: #{username}"
     if username && email
-      username = username.split('@')[0] # usernames cannot be email addresses
+      # usernames cannot be email addresses (legacy) and will be downcased:
+      # https://github.com/archivesspace/archivesspace/blob/master/backend/app/model/user.rb#L117-L121
+      username = username.split('@').first.downcase
       auth_hash[:info][:username] = username # set username, checked in backend
       auth_hash[:info][:email] = email # ensure email is set in info
       File.open(pw_path, 'w') { |f| f.write(JSON.generate(auth_hash)) }

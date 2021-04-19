@@ -26,7 +26,7 @@ class ASOauth
     return nil unless File.exist? pw_path
 
     info = JSON.parse(File.read(pw_path))['info']
-    return nil unless username == info['username']
+    return nil unless username == info['username'].downcase
 
     JSONModel(:user).from_hash(
       username: username,
