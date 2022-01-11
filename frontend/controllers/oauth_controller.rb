@@ -9,20 +9,18 @@ class OauthController < ApplicationController
   # that is written to the system tmpdir. This is used to verify
   # the user for the backend and then deleted.
   def create
-    pw      = "aspace-oauth-#{auth_hash[:provider]}-#{SecureRandom.uuid}"
-    pw_path = File.join(Dir.tmpdir, pw)
+    pw              = "aspace-oauth-#{auth_hash[:provider]}-#{SecureRandom.uuid}"
+    pw_path         = File.join(Dir.tmpdir, pw)
     backend_session = nil
+    email           = AspaceOauth.get_email(auth_hash)
+    username        = AspaceOauth.use_uid? ? auth_hash.uid : email
 
-    uid = auth_hash.uid
-    email = AspaceOauth.get_email(auth_hash)
-    username = AspaceOauth.use_uid? ? uid : email
     puts "Received callback for user: #{username}"
-    if username && email
-      # usernames cannot be email addresses (legacy) and will be downcased:
-      # https://github.com/archivesspace/archivesspace/blob/master/backend/app/model/user.rb#L117-L121
-      username = username.split('@').first.downcase
-      auth_hash[:info][:username] = username # set username, checked in backend
-      auth_hash[:info][:email] = email # ensure email is set in info
+
+    if email && username
+      username = username.split('@').first unless AspaceOauth.username_is_email?
+      auth_hash[:info][:username] = username.downcase # checked in backend
+      auth_hash[:info][:email]    = email # ensure email is set in info
       File.open(pw_path, 'w') { |f| f.write(JSON.generate(auth_hash)) }
       backend_session = User.login(username, pw)
     end

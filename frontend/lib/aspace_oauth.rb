@@ -50,4 +50,8 @@ module AspaceOauth
   def self.use_uid?
     AppConfig.has_key?(:oauth_idtype) && AppConfig[:oauth_idtype] == :uid
   end
+
+  def self.username_is_email?
+    AppConfig.has_key?(:oauth_username_is_email) && AppConfig[:oauth_username_is_email] == true
+  end
 end
