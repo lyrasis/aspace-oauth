@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'date'
+
 module AspaceOauth
   def self.build_url(host, path, params = {})
     URI::HTTPS.build(
@@ -53,5 +55,25 @@ module AspaceOauth
 
   def self.username_is_email?
     AppConfig.has_key?(:oauth_username_is_email) && AppConfig[:oauth_username_is_email] == true
+  end
+
+  def self.get_oauth_shared_secret
+    secret = AppConfig[:oauth_shared_secret] if AppConfig.has_key? :oauth_shared_secret
+
+    if not (secret.is_a? String and secret.length > 0)
+      raise ":oauth_shared_secret config option is not set"
+    end
+
+    secret
+  end
+
+  def self.encode_user_login_token(auth_hash)
+    payload = JSON.generate({
+      :created_by => "aspace-oauth-#{auth_hash[:provider]}",
+      :created_at => DateTime.now.rfc3339,
+      :user_info => auth_hash[:info]
+    })
+    signature = OpenSSL::HMAC.hexdigest("SHA256", self.get_oauth_shared_secret, payload)
+    JSON.generate({:signature => signature, :payload => payload})
   end
 end

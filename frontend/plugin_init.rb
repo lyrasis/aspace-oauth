@@ -8,6 +8,19 @@ unless oauth_definitions.any?
   raise 'OmniAuth plugin enabled but no definitions provided =('
 end
 
+# oauth_shared_secret is used to authenticate internal login requests from the
+# frontend to the backend. It needs to be explicitly specified if the backend is
+# not running in the same JVM as the frontend. When they're in the same JVM the
+# secret generated here is propagated between them automatically via the system
+# property set here.
+if not AppConfig.has_key? :oauth_shared_secret
+  require 'securerandom'
+  AppConfig[:oauth_shared_secret] = SecureRandom.uuid
+  java.lang.System.set_property(
+    "aspace.config.oauth_shared_secret", AppConfig[:oauth_shared_secret]
+  )
+end
+
 # also used for ui [refactor]
 AppConfig[:oauth_definitions] = oauth_definitions
 ArchivesSpace::Application.extend_aspace_routes(

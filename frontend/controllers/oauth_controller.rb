@@ -5,12 +5,17 @@ class OauthController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   # IMPLEMENTS: /auth/:provider/callback
-  # Successful authentication populates the auth_hash with data
-  # that is written to the system tmpdir. This is used to verify
-  # the user for the backend and then deleted.
+  # Successful authentication populates the auth_hash with user data. We encode
+  # the data in a signed token, which we send to the backend as the user's
+  # password. In the backend, our ASOauth authentication source verifies the
+  # token, and creates a user from the data it contains.
+  #
+  # The token is JSON data, signed (using HMAC) with a secret shared between us
+  # and the backend. Although communication between the frontend and backend is
+  # assumed to be privileged, the password field can be user-specified in a
+  # normal username-password login exchange, so signing the token ensures that a
+  # user-provided password can't be used to forge oauth logins.
   def create
-    pw              = "aspace-oauth-#{auth_hash[:provider]}-#{SecureRandom.uuid}"
-    pw_path         = File.join(Dir.tmpdir, pw)
     backend_session = nil
     email           = AspaceOauth.get_email(auth_hash)
     username        = AspaceOauth.use_uid? ? auth_hash.uid : email
@@ -21,8 +26,8 @@ class OauthController < ApplicationController
       username = username.split('@').first unless AspaceOauth.username_is_email?
       auth_hash[:info][:username] = username.downcase # checked in backend
       auth_hash[:info][:email]    = email # ensure email is set in info
-      File.open(pw_path, 'w') { |f| f.write(JSON.generate(auth_hash)) }
-      backend_session = User.login(username, pw)
+      login_token = AspaceOauth.encode_user_login_token(auth_hash)
+      backend_session = User.login(username, login_token)
     end
 
     if backend_session
@@ -32,7 +37,6 @@ class OauthController < ApplicationController
       flash[:error] = 'Authentication error, unable to login.'
     end
 
-    File.delete pw_path if File.exist? pw_path
     redirect_to controller: :welcome, action: :index
   end
 
