@@ -6,4 +6,6 @@ source 'https://rubygems.org'
 gem 'omniauth',      '~> 1.7', '>= 1.7.1'
 gem 'omniauth-cas',  '~> 2.0'
 gem 'omniauth-saml', '~> 1.8', '>= 1.8.1'
-gem 'addressable',   '~> 2.8'
+
+gem 'addressable', '~> 2.8'
+gem 'racc',        '>= 1.5', '< 1.8'
