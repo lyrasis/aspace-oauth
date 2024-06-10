@@ -1,7 +1,7 @@
 # ArchivesSpace Oauth
 
 Configure ArchivesSpace as a service provider (SP) for oauth authentication.
-*The plugin delegates authentication to the configured identity provider (IDP).*
+_The plugin delegates authentication to the configured identity provider (IDP)._
 
 Strategies tested:
 
@@ -109,6 +109,14 @@ AppConfig[:authentication_sources] = [
 
 # add the plugin to the list
 AppConfig[:plugins] << "aspace-oauth"
+
+# Most people can ignore this. If the ArchivesSpace frontend and backend are
+# deployed separately (not the default), both frontend and backend need the same
+# value for :oauth_shared_secret in order to validate login requests between the
+# frontend and backend. Set this to a long password-like random value.
+# When not set, a value is generated automatically and shared inside the JVM
+# using a system property.
+#AppConfig[:oauth_shared_secret] = "00000000-0000-0000-0000-000000000000"
 ```
 
 Add / change providers as needed and refer to the project documentation
