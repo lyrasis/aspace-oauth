@@ -17,15 +17,15 @@ class OauthController < ApplicationController
   # user-provided password can't be used to forge oauth logins.
   def create
     backend_session = nil
-    email           = AspaceOauth.get_email(auth_hash)
-    username        = AspaceOauth.use_uid? ? auth_hash.uid : email
+    email = AspaceOauth.get_email(auth_hash)
+    username = AspaceOauth.use_uid? ? auth_hash.uid : email
 
     puts "Received callback for user: #{username}"
 
     if email && username
-      username = username.split('@').first unless AspaceOauth.username_is_email?
+      username = username.split("@").first unless AspaceOauth.username_is_email?
       auth_hash[:info][:username] = username.downcase # checked in backend
-      auth_hash[:info][:email]    = email # ensure email is set in info
+      auth_hash[:info][:email] = email # ensure email is set in info
       login_token = AspaceOauth.encode_user_login_token(auth_hash)
       backend_session = User.login(username, login_token)
     end
@@ -34,7 +34,7 @@ class OauthController < ApplicationController
       User.establish_session(self, backend_session, username)
       load_repository_list
     else
-      flash[:error] = 'Authentication error, unable to login.'
+      flash[:error] = "Authentication error, unable to login."
     end
 
     redirect_to controller: :welcome, action: :index
@@ -58,6 +58,6 @@ class OauthController < ApplicationController
   protected
 
   def auth_hash
-    request.env['omniauth.auth']
+    request.env["omniauth.auth"]
   end
 end

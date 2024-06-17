@@ -1,0 +1,4 @@
+PreCommit:
+  StandardRB:
+    enabled: true
+    command: ["standardrb"]

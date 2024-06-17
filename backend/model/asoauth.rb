@@ -30,16 +30,16 @@ class ASOauth
       return nil
     end
 
-    return nil unless username == info['username'].downcase
+    return nil unless username == info["username"].downcase
 
     JSONModel(:user).from_hash(
       username: username,
-      name: info['name'],
-      email: info['email'],
-      first_name: info['first_name'],
-      last_name: info['last_name'],
-      telephone: info['phone'],
-      additional_contact: info['description']
+      name: info["name"],
+      email: info["email"],
+      first_name: info["first_name"],
+      last_name: info["last_name"],
+      telephone: info["phone"],
+      additional_contact: info["description"]
     )
   end
 
@@ -57,7 +57,7 @@ class ASOauth
       end
     end
 
-    unless secret.is_a? String and secret.length > 0
+    unless secret.is_a?(String) && (secret.length > 0)
       raise ASOauthException.new(":oauth_shared_secret config option is not set")
     end
     secret
@@ -66,16 +66,15 @@ class ASOauth
   def validate_login_token_and_extract_user_info(login_token)
     begin
       unverified_token = JSON.parse(login_token)
-    rescue JSON::ParserError => e
+    rescue JSON::ParserError
       raise InvalidLoginTokenException.new("login_token is not valid JSON")
     end
 
     signature = unverified_token["signature"] if unverified_token.is_a? Hash
     json_payload = unverified_token["payload"] if unverified_token.is_a? Hash
 
-    unless signature.is_a? String and json_payload.is_a? String
+    unless signature.is_a?(String) && json_payload.is_a?(String)
       raise InvalidLoginTokenException.new("login_token content is invalid")
-      return nil
     end
 
     secret = get_oauth_shared_secret
@@ -88,7 +87,7 @@ class ASOauth
 
     begin
       payload = JSON.parse(json_payload)
-    rescue JSON::ParserError => e
+    rescue JSON::ParserError
       raise InvalidLoginTokenException.new("login_token payload is not valid JSON")
     end
 
@@ -109,7 +108,7 @@ class ASOauth
     end
 
     user_info = payload["user_info"]
-    unless user_info.is_a? Hash and user_info.has_key? "username"
+    unless user_info.is_a?(Hash) && user_info.has_key?("username")
       raise InvalidLoginTokenException.new(
         "login_token's payload user_info is invalid"
       )
@@ -119,12 +118,12 @@ class ASOauth
 
   def matching_usernames(query)
     DB.open do |db|
-      query = query.gsub(/[%]/, '').downcase
+      query = query.gsub(/[%]/, "").downcase
       db[:user]
         .filter(Sequel.~(is_system_user: 1))
         .filter(Sequel.like(
-                  Sequel.function(:lower, :username), "#{query}%"
-                ))
+          Sequel.function(:lower, :username), "#{query}%"
+        ))
         .filter(Sequel.like(:source, name))
         .select(:username)
         .limit(AppConfig[:max_usernames_per_source].to_i)

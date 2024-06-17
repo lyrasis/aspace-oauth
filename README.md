@@ -150,6 +150,15 @@ openssl req -new -x509 -key rsaprivkey.pem -out rsacert.pem
 ./build/run bundler -Dgemfile=../plugins/aspace-oauth/Gemfile
 ```
 
+For linting:
+
+```bash
+# install overcommit for git precommit hooks
+gem install overcommit && overcommit --install && overcommit --sign pre-commit
+gem install standard
+standardrb --fix
+```
+
 ## License
 
 This project is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
