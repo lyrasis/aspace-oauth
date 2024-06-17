@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'date'
+require "date"
 
 module AspaceOauth
   def self.build_url(host, path, params = {})
@@ -12,12 +12,12 @@ module AspaceOauth
   end
 
   def self.cas_logout_url
-    config = get_oauth_config_for('cas')
+    config = get_oauth_config_for("cas")
     return unless config
 
-    host   = config[:config][:url]
-    path   = config[:config][:logout_url]
-    params = { service: AppConfig[:frontend_proxy_url] }
+    host = config[:config][:url]
+    path = config[:config][:logout_url]
+    params = {service: AppConfig[:frontend_proxy_url]}
     build_url(host, path, params)
   end
 
@@ -40,7 +40,7 @@ module AspaceOauth
   end
 
   def self.saml_logout_url
-    config = get_oauth_config_for('saml')
+    config = get_oauth_config_for("saml")
     return unless config
 
     build_url(
@@ -60,7 +60,7 @@ module AspaceOauth
   def self.get_oauth_shared_secret
     secret = AppConfig[:oauth_shared_secret] if AppConfig.has_key? :oauth_shared_secret
 
-    if not (secret.is_a? String and secret.length > 0)
+    if !(secret.is_a?(String) && (secret.length > 0))
       raise ":oauth_shared_secret config option is not set"
     end
 
@@ -69,11 +69,11 @@ module AspaceOauth
 
   def self.encode_user_login_token(auth_hash)
     payload = JSON.generate({
-      :created_by => "aspace-oauth-#{auth_hash[:provider]}",
-      :created_at => DateTime.now.rfc3339,
-      :user_info => auth_hash[:info]
+      created_by: "aspace-oauth-#{auth_hash[:provider]}",
+      created_at: DateTime.now.rfc3339,
+      user_info: auth_hash[:info]
     })
-    signature = OpenSSL::HMAC.hexdigest("SHA256", self.get_oauth_shared_secret, payload)
-    JSON.generate({:signature => signature, :payload => payload})
+    signature = OpenSSL::HMAC.hexdigest("SHA256", get_oauth_shared_secret, payload)
+    JSON.generate({signature: signature, payload: payload})
   end
 end
