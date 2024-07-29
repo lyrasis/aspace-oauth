@@ -20,13 +20,15 @@ class OauthController < ApplicationController
     email = AspaceOauth.get_email(auth_hash)
     username = AspaceOauth.use_uid? ? auth_hash.uid : email
 
-    puts "Received callback for user: #{username}"
+    puts "Received callback for user: #{username}" if AspaceOauth.debug?
 
     if email && username
       username = username.split("@").first unless AspaceOauth.username_is_email?
       auth_hash[:info][:username] = username.downcase # checked in backend
       auth_hash[:info][:email] = email # ensure email is set in info
       login_token = AspaceOauth.encode_user_login_token(auth_hash)
+      puts "Generated token: #{login_token}" if AspaceOauth.debug?
+
       backend_session = User.login(username, login_token)
     end
 

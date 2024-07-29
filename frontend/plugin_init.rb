@@ -8,6 +8,10 @@ unless oauth_definitions.any?
   raise "OmniAuth plugin enabled but no definitions provided =("
 end
 
+if !AppConfig.has_key? :oauth_debug
+  AppConfig[:oauth_debug] = true # TODO: default false
+end
+
 # oauth_shared_secret is used to authenticate internal login requests from the
 # frontend to the backend. It needs to be explicitly specified if the backend is
 # not running in the same JVM as the frontend. When they're in the same JVM the
@@ -48,6 +52,6 @@ Rails.application.config.middleware.use OmniAuth::Builder do
       end
     end
     provider oauth_definition[:provider], config
-    $stdout.puts "REGISTERED OAUTH PROVIDER WITH CONFIG: #{config}"
+    $stdout.puts "REGISTERED OAUTH PROVIDER WITH CONFIG: #{config}" if AspaceOauth.debug?
   end
 end

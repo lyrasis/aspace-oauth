@@ -21,6 +21,10 @@ module AspaceOauth
     build_url(host, path, params)
   end
 
+  def self.debug?
+    AppConfig.has_key?(:oauth_debug) && AppConfig[:oauth_debug] == true
+  end
+
   def self.get_email(auth)
     email = nil
     if auth[:info].key?(:email) && !auth[:info][:email].nil?
