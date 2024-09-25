@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
-require_relative 'lib/aspace_oauth'
+require_relative "lib/aspace_oauth"
 oauth_definitions = AppConfig[:authentication_sources].find_all do |as|
-  as[:model] == 'ASOauth'
+  as[:model] == "ASOauth"
 end
 unless oauth_definitions.any?
-  raise 'OmniAuth plugin enabled but no definitions provided =('
+  raise "OmniAuth plugin enabled but no definitions provided =("
+end
+
+if !AppConfig.has_key? :oauth_debug
+  AppConfig[:oauth_debug] = true # TODO: default false
 end
 
 # oauth_shared_secret is used to authenticate internal login requests from the
@@ -13,8 +17,8 @@ end
 # not running in the same JVM as the frontend. When they're in the same JVM the
 # secret generated here is propagated between them automatically via the system
 # property set here.
-if not AppConfig.has_key? :oauth_shared_secret
-  require 'securerandom'
+if !AppConfig.has_key? :oauth_shared_secret
+  require "securerandom"
   AppConfig[:oauth_shared_secret] = SecureRandom.uuid
   java.lang.System.set_property(
     "aspace.config.oauth_shared_secret", AppConfig[:oauth_shared_secret]
@@ -24,9 +28,9 @@ end
 # also used for ui [refactor]
 AppConfig[:oauth_definitions] = oauth_definitions
 ArchivesSpace::Application.extend_aspace_routes(
-  File.join(File.dirname(__FILE__), 'routes.rb')
+  File.join(File.dirname(__FILE__), "routes.rb")
 )
-require 'omniauth'
+require "omniauth"
 
 Rails.application.config.middleware.use OmniAuth::Builder do
   oauth_definitions.each do |oauth_definition|
@@ -34,7 +38,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
     config = oauth_definition[:config]
     if oauth_definition.key? :metadata_parser_url
       idp_metadata_parser = OneLogin::RubySaml::IdpMetadataParser.new
-      idp_metadata        = idp_metadata_parser.parse_remote_to_hash(
+      idp_metadata = idp_metadata_parser.parse_remote_to_hash(
         oauth_definition[:metadata_parser_url], verify_ssl
       )
       config = idp_metadata.merge(config)
@@ -48,6 +52,6 @@ Rails.application.config.middleware.use OmniAuth::Builder do
       end
     end
     provider oauth_definition[:provider], config
-    $stdout.puts "REGISTERED OAUTH PROVIDER WITH CONFIG: #{config}"
+    $stdout.puts "REGISTERED OAUTH PROVIDER WITH CONFIG: #{config}" if AspaceOauth.debug?
   end
 end
