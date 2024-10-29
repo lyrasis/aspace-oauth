@@ -141,7 +141,7 @@ To generate a cert / key use a command like:
 
 ```bash
 openssl genrsa -out rsaprivkey.pem 2048
-openssl req -new -x509 -key rsaprivkey.pem -out rsacert.pem
+openssl req -new -x509 -nodes -days 3650 -key rsaprivkey.pem -out rsacert.pem
 ```
 
 ## Developer
