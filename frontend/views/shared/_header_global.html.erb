@@ -1,10 +1,4 @@
-<div class="container-fluid global-header">
-  <span class="sr-only">
-    <h1>
-      <%= I18n.t("header.staff_interface") %>
-    </h1>
-  </span>
-  <nav class="navbar">
+<header>
   <div class="container-fluid global-header">
     <span class="sr-only">
       <h1>ArchivesSpace Staff Interface</h1>
@@ -14,7 +8,6 @@
         <div class="navbar-collapse nav-global-collapse navbar-default d-flex justify-content-end">
           <ul class="nav navbar-nav navbar-login ml-auto">
             <!-- PLUGIN BEGIN -->
-            <!-- FIXFOR4 -->
             <li><a href="/staff/auth/developer">Sign In Developer</a></li>
             <!-- PLUGIN END -->
             <li class="xs-py15px">
@@ -31,8 +24,8 @@
       </div>
     </nav>
   </div>
-  </nav>
-</div>
+</header>
+
 <!-- PLUGIN BEGIN -->
 <% if session[:user] %>
   <% AppConfig[:oauth_definitions].find_all{ |od| od[:slo_link] }.each do |oauth_definition| %>
