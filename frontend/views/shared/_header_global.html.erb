@@ -1,29 +1,31 @@
-<div class="container-fluid global-header">
-  <span class="sr-only">
-    <h1>
+<header>
+  <div class="container-fluid global-header">
+    <span class="sr-only">
       <%= I18n.t("header.staff_interface") %>
-    </h1>
-  </span>
-  <nav class="navbar">
-    <div class="container-fluid sm-mxn15px">
-      <div class="navbar-collapse nav-global-collapse navbar-right navbar-default">
-        <ul class="nav pull-right navbar-nav navbar-login">
-          <%= render "shared/header_user" %>
-          <!-- PLUGIN BEGIN -->
-          <% if AppConfig[:oauth_definitions] and !session[:user] %>
-            <% AppConfig[:oauth_definitions].each do |oauth_definition| %>
-              <li><%= link_to oauth_definition[:label], "#{AppConfig[:frontend_proxy_prefix]}auth/#{oauth_definition[:provider]}" %></li>
-            <% end %>
-          <% end %>
-          <!-- PLUGIN END -->
-          <% if ArchivesSpaceHelp.enabled? %>
-            <li class="xs-py15px"><%= link_to_help %></li>
-          <% end %>
-        </ul>
-      </div><!-- nav-collapse -->
-    </div>
-  </nav>
-</div>
+    </span>
+    <nav class="navbar">
+      <div class="container-fluid sm-mxn15px">
+        <div class="navbar-collapse nav-global-collapse navbar-default d-flex justify-content-end">
+          <ul class="nav navbar-nav navbar-login ml-auto">
+            <!-- PLUGIN BEGIN -->
+            <li><a href="/staff/auth/developer">Sign In Developer</a></li>
+            <!-- PLUGIN END -->
+            <li class="xs-py15px">
+              <a target="_blank" title="" class="context-help has-tooltip px-4 initialised" 
+                 data-placement="bottom" data-toggle="tooltip" data-boundary="viewport" 
+                 href="https://archivesspace.atlassian.net/wiki/spaces/ArchivesSpaceUserManual/overview" 
+                 data-original-title="ArchivesSpace Help Center">
+                <span class="context-help-icon glyphicon glyphicon-question-sign"></span>
+                <span class="sr-only"> Visit the ArchivesSpace Help Center</span>
+              </a>
+            </li>
+          </ul>
+        </div><!-- nav-collapse -->
+      </div>
+    </nav>
+  </div>
+</header>
+
 <!-- PLUGIN BEGIN -->
 <% if session[:user] %>
   <% AppConfig[:oauth_definitions].find_all{ |od| od[:slo_link] }.each do |oauth_definition| %>
