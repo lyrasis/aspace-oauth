@@ -1,14 +1,13 @@
-<div class="container-fluid global-header">
+<div class="global-header">
   <span class="sr-only">
     <h1>
-      <%= I18n.t("header.staff_interface") %>
+      <%= t("header.staff_interface") %>
     </h1>
   </span>
-  <nav class="navbar">
-    <div class="container-fluid sm-mxn15px">
-      <div class="navbar-collapse nav-global-collapse navbar-right navbar-default d-flex justify-content-end">
-        <ul class="nav pull-right navbar-nav navbar-login ml-auto">
-          <%= render "shared/header_user" %>
+  <nav class="global-header-nav">
+    <%= render "site/branding" %>
+    <ul class="list-unstyled ml-auto d-flex gap-x-2 bg-light rounded-bottom shadow-sm">
+      <%= render "shared/header_user" %>
           <!-- PLUGIN BEGIN -->
           <% if AppConfig[:oauth_definitions] and !session[:user] %>
             <% AppConfig[:oauth_definitions].each do |oauth_definition| %>
@@ -16,12 +15,11 @@
             <% end %>
           <% end %>
           <!-- PLUGIN END -->
-          <% if ArchivesSpaceHelp.enabled? %>
-            <li class="xs-py15px"><%= link_to_help %></li>
-          <% end %>
-        </ul>
-      </div><!-- nav-collapse -->
-    </div>
+      <% if ArchivesSpaceHelp.enabled? %>
+        <li class="d-flex align-items-center<%= (session[:user] ? ' mr-3' : '') %>"><%= link_to_help %></li>
+        <%# .mr-3 used above to align link_to_help with the other below it %>
+      <% end %>
+    </ul>
   </nav>
 </div>
 <!-- PLUGIN BEGIN -->
