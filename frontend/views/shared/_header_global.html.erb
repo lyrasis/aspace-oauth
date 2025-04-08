@@ -11,7 +11,7 @@
           <!-- PLUGIN BEGIN -->
           <% if AppConfig[:oauth_definitions] and !session[:user] %>
             <% AppConfig[:oauth_definitions].each do |oauth_definition| %>
-              <li><%= link_to oauth_definition[:label], "#{AppConfig[:frontend_proxy_prefix]}auth/#{oauth_definition[:provider]}" %></li>
+              <li style="white-space: nowrap;" class="d-flex align-items-center ml-2"><%= link_to oauth_definition[:label], "#{AppConfig[:frontend_proxy_prefix]}auth/#{oauth_definition[:provider]}" %></li>
             <% end %>
           <% end %>
           <!-- PLUGIN END -->
