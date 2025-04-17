@@ -47,10 +47,16 @@ module AspaceOauth
     config = get_oauth_config_for("saml")
     return unless config
 
-    build_url(
-      AppConfig[:frontend_proxy_url],
-      "#{AppConfig[:frontend_proxy_prefix]}auth/saml/spslo"
-    )
+    host = config[:config][:idp_slo_service_url]
+    
+    if config[:config][:idp_slo_service_url]
+      config[:config][:idp_slo_service_url].to_s
+    else
+      build_url(
+        AppConfig[:frontend_proxy_url],
+        "#{AppConfig[:frontend_proxy_prefix]}auth/saml/spslo"
+      )
+    end
   end
 
   def self.use_uid?
