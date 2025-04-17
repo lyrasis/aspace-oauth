@@ -47,11 +47,11 @@ module AspaceOauth
   def self.saml_logout_url
     config = get_oauth_config_for("saml")
     return unless config
-    
+
     host = config[:config][:idp_slo_service_url]
-    
-    if host
-      host.to_s
+
+    if config[:config][:idp_slo_service_url]
+      config[:config][:idp_slo_service_url].to_s
     else
       build_url(
         AppConfig[:frontend_proxy_url],
