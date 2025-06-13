@@ -17,8 +17,8 @@ class OauthController < ApplicationController
   # user-provided password can't be used to forge oauth logins.
   def create
     backend_session = nil
-    email = AspaceOauth.get_email(auth_hash)
-    username = AspaceOauth.use_uid? ? auth_hash.uid : email
+    email = username+"@nyu.edu"
+    username = auth_hash["extra"]["raw_info"]["urn:oid:0.9.2342.19200300.100.1.1"]
 
     puts "Received callback for user: #{username}" if AspaceOauth.debug?
 
