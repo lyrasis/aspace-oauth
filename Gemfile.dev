@@ -1,0 +1,22 @@
+# frozen_string_literal: true
+
+# Development Gemfile for testing aspace-oauth plugin
+# This is separate from the main Gemfile which is designed for ArchivesSpace context
+#
+# Usage:
+#   bundle install --gemfile=Gemfile.dev
+#   bundle exec --gemfile=Gemfile.dev rake test
+
+source "https://rubygems.org"
+
+# Testing framework
+gem "minitest", "~> 5.0"
+
+# Mocking and stubbing
+gem "mocha", "~> 2.0"
+
+# Code quality tools
+gem "standard", "~> 1.0"
+
+# Test runner
+gem "rake", "~> 13.0"
