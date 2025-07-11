@@ -7,7 +7,7 @@ module AspaceOauth
     URI::HTTPS.build(
       host: URI(host).host,
       path: path,
-      query: URI.encode_www_form(params)
+      query: params.any? ? URI.encode_www_form(params) : nil
     ).to_s
   end
 
@@ -43,14 +43,13 @@ module AspaceOauth
     AppConfig[:oauth_definitions].find { |oauth| oauth[:provider] == strategy }
   end
 
-
   def self.saml_logout_url
     config = get_oauth_config_for("saml")
     return unless config
-    
+
     host = config[:config][:idp_slo_service_url]
-    
-    if host
+
+    if host && !host.empty?
       host.to_s
     else
       build_url(
