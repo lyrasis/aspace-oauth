@@ -26,7 +26,7 @@ task :lint_fix do
   sh "standardrb --fix"
 end
 
-desc "Run all quality checks"
-task quality: [:lint, :test]
+desc "Run all lint checks"
+task lint: [:lint, :test]
 
 task default: :test
