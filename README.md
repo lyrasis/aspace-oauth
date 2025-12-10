@@ -162,7 +162,7 @@ bundle install --gemfile=Gemfile.dev
 bundle exec --gemfile=Gemfile.dev rake test
 
 # Run tests with linting
-bundle exec --gemfile=Gemfile.dev rake quality
+bundle exec --gemfile=Gemfile.dev rake lint
 
 # Run individual test file
 bundle exec --gemfile=Gemfile.dev ruby -Itest test/unit/aspace_oauth_test.rb
