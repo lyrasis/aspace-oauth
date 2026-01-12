@@ -49,7 +49,7 @@ module AspaceOauth
 
     build_url(
       AppConfig[:frontend_proxy_url],
-      "#{AppConfig[:frontend_proxy_prefix]}auth/saml/slo"
+      "#{AppConfig[:frontend_proxy_prefix]}auth/saml/spslo"
     )
   end
 
