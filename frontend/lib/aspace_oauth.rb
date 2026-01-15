@@ -7,7 +7,7 @@ module AspaceOauth
     URI::HTTPS.build(
       host: URI(host).host,
       path: path,
-      query: params.any? ? URI.encode_www_form(params) : nil
+      query: URI.encode_www_form(params)
     ).to_s
   end
 
@@ -47,16 +47,10 @@ module AspaceOauth
     config = get_oauth_config_for("saml")
     return unless config
 
-    host = config[:config][:idp_slo_service_url]
-
-    if host && !host.empty?
-      host.to_s
-    else
-      build_url(
-        AppConfig[:frontend_proxy_url],
-        "#{AppConfig[:frontend_proxy_prefix]}auth/saml/spslo"
-      )
-    end
+    build_url(
+      AppConfig[:frontend_proxy_url],
+      "#{AppConfig[:frontend_proxy_prefix]}auth/saml/spslo"
+    )
   end
 
   def self.use_uid?

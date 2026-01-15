@@ -150,32 +150,13 @@ openssl req -new -x509 -nodes -days 3650 -key rsaprivkey.pem -out rsacert.pem
 ./build/run bundler -Dgemfile=../plugins/aspace-oauth/Gemfile
 ```
 
-### Testing
-
-This plugin includes a test suite using minitest. Since this is an ArchivesSpace plugin, testing requires setup to mock ArchivesSpace dependencies.
-
-```bash
-# Install development dependencies
-bundle install --gemfile=Gemfile.dev
-
-# Run tests
-bundle exec --gemfile=Gemfile.dev rake test
-
-# Run tests with linting
-bundle exec --gemfile=Gemfile.dev rake lint
-
-# Run individual test file
-bundle exec --gemfile=Gemfile.dev ruby -Itest test/unit/aspace_oauth_test.rb
-```
-
-The test suite uses a separate `Gemfile.dev` to avoid conflicts with the main Gemfile, which is designed for the ArchivesSpace context. Tests mock the `AppConfig` module and other ArchivesSpace dependencies.
-
 For linting:
 
 ```bash
 # install overcommit for git precommit hooks
 gem install overcommit && overcommit --install && overcommit --sign pre-commit
-bundle exec --gemfile=Gemfile.dev rake lint_fix
+gem install standard
+standardrb --fix
 ```
 
 ## License

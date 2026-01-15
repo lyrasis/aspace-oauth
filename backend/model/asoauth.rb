@@ -118,7 +118,7 @@ class ASOauth
 
   def matching_usernames(query)
     DB.open do |db|
-      query = query.delete("%").downcase
+      query = query.gsub(/[%]/, "").downcase
       db[:user]
         .filter(Sequel.~(is_system_user: 1))
         .filter(Sequel.like(
