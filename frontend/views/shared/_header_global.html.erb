@@ -28,7 +28,7 @@
     <script type="text/javascript">
       (function() {
         var logout = $('a[href~="<%= AppConfig[:frontend_proxy_prefix] %>logout"]').parent().parent();
-        logout.append('<li><%= link_to("#{oauth_definition[:provider].upcase} Logout", "#{AppConfig[:frontend_proxy_prefix]}auth/#{oauth_definition[:provider]}_logout"), class: 'dropdown-item' %></li>');
+        logout.append('<li><%= link_to("#{oauth_definition[:provider].upcase} Logout", "#{AppConfig[:frontend_proxy_prefix]}auth/#{oauth_definition[:provider]}_logout", class: 'dropdown-item') %></li>');
       })();
     </script>
   <% end %>
