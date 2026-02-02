@@ -1,4 +1,5 @@
 *.md
+!CHANGELOG.md
 !README.md
 *.swp
 .bundle/

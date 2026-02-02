@@ -19,6 +19,18 @@ Enabling this plugin will:
 - User group membership and permissions are handled within ArchivesSpace
 - The oauth plugin handles (by delegating) authentication only
 
+## Version Compatibility
+
+This plugin tracks ArchivesSpace releases. The `master` branch supports the current ArchivesSpace version. For earlier versions, use the corresponding [tag](https://github.com/lyrasis/aspace-oauth/tags):
+
+| Plugin Version | ArchivesSpace Version |
+|----------------|----------------------|
+| v4.0.0+        | 4.0.0+               |
+| v3.5.x         | 3.5.x                |
+| v3.2.0         | 3.2.x                |
+
+See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
+
 ## Installation
 
 Download this plugin to `$ARCHIVESSPACE_DIR/plugins` and initialize it:
@@ -176,6 +188,15 @@ For linting:
 # install overcommit for git precommit hooks
 gem install overcommit && overcommit --install && overcommit --sign pre-commit
 bundle exec --gemfile=Gemfile.dev rake lint_fix
+```
+
+## CHANGELOG generation
+
+For now this is a manual process:
+
+```bash
+cargo install git-cliff
+git-cliff -o CHANGELOG.md
 ```
 
 ## License

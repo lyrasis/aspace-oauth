@@ -1,0 +1,53 @@
+# git-cliff configuration for aspace-oauth
+# This config accepts all commit messages (not just Conventional Commits)
+
+[changelog]
+header = """
+# Changelog
+
+All notable changes to this project will be documented in this file.
+"""
+body = """
+{% if version %}\
+    ## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}\
+    ## [Unreleased]
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}
+    ### {{ group | upper_first }}
+    {% for commit in commits | unique(attribute="message") %}
+        - {{ commit.message | split(pat="\n") | first | trim }}\
+          {% if commit.remote.pr_number %} ([#{{ commit.remote.pr_number }}](https://github.com/lyrasis/aspace-oauth/pull/{{ commit.remote.pr_number }})){% endif %}\
+    {% endfor %}
+{% endfor %}
+"""
+footer = """
+"""
+trim = true
+
+[git]
+conventional_commits = false
+filter_unconventional = false
+split_commits = false
+commit_parsers = [
+    { message = "^[Ff]ix", group = "Bug Fixes" },
+    { message = "^[Rr]evert", group = "Reverted" },
+    { message = "^[Bb]ump", group = "Dependencies" },
+    { message = "^[Pp]in", group = "Dependencies" },
+    { message = "^[Uu]pdate", group = "Dependencies" },
+    { message = "^[Aa]dd", group = "Features" },
+    { message = "^[Aa]llow", group = "Features" },
+    { message = "^[Uu]se", group = "Changes" },
+    { message = "^[Rr]emove", group = "Changes" },
+    { message = "^[Mm]erge pull request", skip = true },
+    { message = "^[Mm]erge branch", skip = true },
+    { message = "^pr/", skip = true },
+    { message = "^Pr/", skip = true },
+    { message = ".*", group = "Other" },
+]
+filter_commits = false
+tag_pattern = "v[0-9].*"
+skip_tags = ""
+ignore_tags = ""
+topo_order = false
+sort_commits = "oldest"
