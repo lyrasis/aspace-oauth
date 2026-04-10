@@ -4,11 +4,9 @@ require_relative "lib/aspace_oauth"
 oauth_definitions = AppConfig[:authentication_sources].find_all do |as|
   as[:model] == "ASOauth"
 end
-unless oauth_definitions.any?
-  raise "OmniAuth plugin enabled but no definitions provided =("
-end
+raise "OmniAuth plugin enabled but no definitions provided =(" unless oauth_definitions.any?
 
-if !AppConfig.has_key? :oauth_debug
+unless AppConfig.has_key? :oauth_debug
   AppConfig[:oauth_debug] = true # TODO: default false
 end
 
@@ -17,7 +15,7 @@ end
 # not running in the same JVM as the frontend. When they're in the same JVM the
 # secret generated here is propagated between them automatically via the system
 # property set here.
-if !AppConfig.has_key? :oauth_shared_secret
+unless AppConfig.has_key? :oauth_shared_secret
   require "securerandom"
   AppConfig[:oauth_shared_secret] = SecureRandom.uuid
   java.lang.System.set_property(
@@ -45,10 +43,8 @@ Rails.application.config.middleware.use OmniAuth::Builder do
     end
     if config.key? :security
       # replace strings with constants for *_method
-      [:digest_method, :signature_method].each do |m|
-        if config[:security].key? m
-          config[:security][m] = config[:security][m].constantize
-        end
+      %i[digest_method signature_method].each do |m|
+        config[:security][m] = config[:security][m].constantize if config[:security].key? m
       end
     end
     provider oauth_definition[:provider], config

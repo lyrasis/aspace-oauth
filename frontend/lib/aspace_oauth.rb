@@ -17,7 +17,7 @@ module AspaceOauth
 
     host = config[:config][:url]
     path = config[:config][:logout_url]
-    params = {service: AppConfig[:frontend_proxy_url]}
+    params = { service: AppConfig[:frontend_proxy_url] }
     build_url(host, path, params)
   end
 
@@ -32,9 +32,7 @@ module AspaceOauth
     elsif auth[:extra].key?(:email) && !auth[:extra][:email].nil?
       email = auth[:extra][:email]
     elsif auth[:extra].key?(:response_object)
-      if auth[:extra][:response_object].name_id
-        email = auth[:extra][:response_object].name_id
-      end
+      email = auth[:extra][:response_object].name_id if auth[:extra][:response_object].name_id
     end
     email
   end
@@ -70,20 +68,18 @@ module AspaceOauth
   def self.get_oauth_shared_secret
     secret = AppConfig[:oauth_shared_secret] if AppConfig.has_key? :oauth_shared_secret
 
-    if !(secret.is_a?(String) && (secret.length > 0))
-      raise ":oauth_shared_secret config option is not set"
-    end
+    raise ":oauth_shared_secret config option is not set" unless secret.is_a?(String) && (secret.length > 0)
 
     secret
   end
 
   def self.encode_user_login_token(auth_hash)
     payload = JSON.generate({
-      created_by: "aspace-oauth-#{auth_hash[:provider]}",
-      created_at: DateTime.now.rfc3339,
-      user_info: auth_hash[:info]
-    })
+                              created_by: "aspace-oauth-#{auth_hash[:provider]}",
+                              created_at: DateTime.now.rfc3339,
+                              user_info: auth_hash[:info]
+                            })
     signature = OpenSSL::HMAC.hexdigest("SHA256", get_oauth_shared_secret, payload)
-    JSON.generate({signature: signature, payload: payload})
+    JSON.generate({ signature: signature, payload: payload })
   end
 end
