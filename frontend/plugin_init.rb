@@ -7,7 +7,7 @@ end
 raise "OmniAuth plugin enabled but no definitions provided =(" unless oauth_definitions.any?
 
 unless AppConfig.has_key? :oauth_debug
-  AppConfig[:oauth_debug] = true # TODO: default false
+  AppConfig[:oauth_debug] = false
 end
 
 # oauth_shared_secret is used to authenticate internal login requests from the
@@ -48,6 +48,6 @@ Rails.application.config.middleware.use OmniAuth::Builder do
       end
     end
     provider oauth_definition[:provider], config
-    $stdout.puts "REGISTERED OAUTH PROVIDER WITH CONFIG: #{config}" if AspaceOauth.debug?
+    $stdout.puts "REGISTERED OAUTH PROVIDER: #{oauth_definition[:provider]}" if AspaceOauth.debug?
   end
 end
