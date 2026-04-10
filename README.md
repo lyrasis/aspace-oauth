@@ -21,18 +21,18 @@ Enabling this plugin will:
 
 ## Version Compatibility
 
-This plugin tracks ArchivesSpace releases. The `master` branch supports the current ArchivesSpace version. For specific versions use the corresponding [tag](https://github.com/lyrasis/aspace-oauth/tags):
+This plugin tracks ArchivesSpace releases. The `master` branch supports the current ArchivesSpace version (note: there may be a short 1-2 week lag post release). For specific versions use the corresponding [tag](https://github.com/lyrasis/aspace-oauth/tags):
 
 
 | Plugin Version | ArchivesSpace Version |
 |----------------|-----------------------|
 | v4.2.0         | 4.2.0                 |
-| v4.0.0         | 4.0.0-4.1.0           |
+| v4.0.0         | 4.0.0-4.1.x           |
 | v3.5.x         | 3.5.x                 |
 | v3.2.0         | 3.2.x                 |
 
 
-See [CHANGELOG.md](CHANGELOG.md) for detailed release notes and [UPGRADING.md](UPGRADING.md) for upgrade instructions.
+See [CHANGELOG.md](CHANGELOG.md) for detailed release notes and [UPGRADING.md](UPGRADING.md) for any upgrade instructions.
 
 ## Installation
 
