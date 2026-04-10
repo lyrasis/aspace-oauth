@@ -3,7 +3,6 @@
 ASpaceGems.setup if defined? ASpaceGems
 source "https://rubygems.org"
 
-gem "omniauth", "~> 1.7", ">= 1.7.1"
-gem "omniauth-cas", "~> 2.0"
-gem "omniauth-saml", "~> 1.8", ">= 1.10.6"
-gem "addressable", "2.8.7"
+gem "omniauth", "~> 2.1", ">= 2.1.4"
+gem "omniauth-cas", "~> 3.0", ">= 3.0.2"
+gem "omniauth-saml", "~> 2.2", ">= 2.2.5"

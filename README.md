@@ -21,15 +21,18 @@ Enabling this plugin will:
 
 ## Version Compatibility
 
-This plugin tracks ArchivesSpace releases. The `master` branch supports the current ArchivesSpace version. For earlier versions, use the corresponding [tag](https://github.com/lyrasis/aspace-oauth/tags):
+This plugin tracks ArchivesSpace releases. The `master` branch supports the current ArchivesSpace version. For specific versions use the corresponding [tag](https://github.com/lyrasis/aspace-oauth/tags):
+
 
 | Plugin Version | ArchivesSpace Version |
-|----------------|----------------------|
-| v4.0.0+        | 4.0.0+               |
-| v3.5.x         | 3.5.x                |
-| v3.2.0         | 3.2.x                |
+|----------------|-----------------------|
+| v4.2.0         | 4.2.0                 |
+| v4.0.0         | 4.0.0-4.1.0           |
+| v3.5.x         | 3.5.x                 |
+| v3.2.0         | 3.2.x                 |
 
-See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
+
+See [CHANGELOG.md](CHANGELOG.md) for detailed release notes and [UPGRADING.md](UPGRADING.md) for upgrade instructions.
 
 ## Installation
 
@@ -71,12 +74,11 @@ AppConfig[:authentication_sources] = [
     # metadata_parser_url: "https://login.somewhere.edu:4443/idp/shibboleth",
     config: {
       :assertion_consumer_service_url     => "http://localhost:3000/auth/saml/callback",
-      :issuer                             => "http://localhost:3000/auth/saml/metadata",
+      :sp_entity_id                       => "http://localhost:3000/auth/saml/metadata",
       :name_identifier_format             => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
       # THESE ARE OPTIONAL IF USING METADATA URL (but can be used to override parsed metadata)
-      :idp_sso_target_url                 => "http://localhost/simplesaml/saml2/idp/SSOService.php",
+      :idp_sso_service_url                => "http://localhost/simplesaml/saml2/idp/SSOService.php",
       :idp_cert_fingerprint               => "119b9e027959cdb7c662cfd075d9e2ef384e445f",
-      :idp_cert_fingerprint_validator     => lambda { |fingerprint| fingerprint },
       # OPTIONAL: for encrypted assertions
       :certificate                        => "PUBLIC CERT",
       :private_key                        => "PRIVATE KEY",
@@ -108,13 +110,13 @@ AppConfig[:authentication_sources] = [
       login_url: '/cas/login',
       logout_url: '/cas/logout',
       service_validate_url: '/cas/serviceValidate',
-      uid_key: 'user',
+      uid_field: 'user',
       email_key: 'email'
       # more cas keys and options at: https://github.com/dlindahl/omniauth-cas
       #
       # if your server does not return an email address, you can add one
       # here using the fetch_raw_info option.
-      fetch_raw_info: ->(s, o, t, user_info) {  { email: "#{user_info['user']}@ivory-tower.edu" } }
+      fetch_raw_info: ->(s, o, t, user_info, _body) {  { email: "#{user_info['user']}@ivory-tower.edu" } }
     }
   }
 ]
