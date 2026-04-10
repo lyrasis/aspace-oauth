@@ -226,8 +226,23 @@ For now this is a manual process:
 
 ```bash
 cargo install git-cliff
-git-cliff -o CHANGELOG.md
 ```
+
+1. Finish testing on the branch
+2. Create PR and merge to master
+3. Generate changelog on a new branch:
+
+```bash
+git checkout master && git pull
+git tag ${version}
+git checkout -b changelog-${version}
+git-cliff -o CHANGELOG.md
+git add CHANGELOG.md
+git commit -m "Update CHANGELOG for ${version}"
+git push origin changelog-${version} --tags
+```
+
+4. Create PR for the changelog, merge to master
 
 ## License
 
