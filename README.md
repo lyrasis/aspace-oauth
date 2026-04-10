@@ -79,20 +79,7 @@ AppConfig[:authentication_sources] = [
       # THESE ARE OPTIONAL IF USING METADATA URL (but can be used to override parsed metadata)
       :idp_sso_service_url                => "http://localhost/simplesaml/saml2/idp/SSOService.php",
       :idp_cert_fingerprint               => "119b9e027959cdb7c662cfd075d9e2ef384e445f",
-      # OPTIONAL: for encrypted assertions
-      :certificate                        => "PUBLIC CERT",
-      :private_key                        => "PRIVATE KEY",
-      # OPTIONAL: may be required by IDP (used with certificate and private_key)
-      :security                           => {
-        authn_requests_signed:     true,
-        want_assertions_signed:    true,
-        want_assertions_encrypted: true,
-        metadata_signed:           true,
-        # XMLSecurity::Document strings for digest and signature will be resolved to constant
-        digest_method:             "XMLSecurity::Document::SHA256",
-        signature_method:          "XMLSecurity::Document::RSA_SHA256",
-        embed_sign:                true,
-      },
+      # OPTIONAL: see "SAML certs" section for certificate, private_key, and security options
       :attribute_statements => {
         email: ["urn:oid:0.9.2342.19200300.100.1.3"],
       },
@@ -137,25 +124,66 @@ Add / change providers as needed and refer to the project documentation
 for configuration details. There are many more configuration options than shown
 above.
 
+## SAML testing
+
 For testing SAML there is a helpful docker image:
 
 ```bash
 docker run --name=test-saml-idp -d \
-  --net=host \
+  -p 8080:8080 -p 8443:8443 \
   -e SIMPLESAMLPHP_SP_ENTITY_ID=http://localhost:3000 \
   -e SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localhost:3000/auth/saml/callback \
   kristophjunge/test-saml-idp
 ```
 
-The test SAML service will be available at: `http://localhost`.
+The test SAML service will be available at: `http://localhost:8080/simplesaml`
+(admin password: `secret`). Test users: `user1`/`user1pass` and `user2`/`user2pass`.
 
-## SAML
+The corresponding ArchivesSpace configuration:
 
-To generate a cert / key use a command like:
+```ruby
+{
+  model: 'ASOauth',
+  provider: 'saml',
+  label: 'SAML Sign In',
+  slo_link: false,
+  config: {
+    :assertion_consumer_service_url => "http://localhost:3000/auth/saml/callback",
+    :sp_entity_id                  => "http://localhost:3000",
+    :name_identifier_format        => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
+    :idp_sso_service_url           => "http://localhost:8080/simplesaml/saml2/idp/SSOService.php",
+    :idp_cert_fingerprint          => "119b9e027959cdb7c662cfd075d9e2ef384e445f",
+  }
+}
+```
+
+## SAML certs
+
+A certificate and private key can be generated for the SP to sign authentication
+requests, sign metadata, and decrypt encrypted assertions from the IDP. The
+public certificate is shared with your IDP.
 
 ```bash
 openssl genrsa -out rsaprivkey.pem 2048
 openssl req -new -x509 -nodes -days 3650 -key rsaprivkey.pem -out rsacert.pem
+```
+
+Then reference them in the SAML config:
+
+```ruby
+config: {
+  # ... other SAML settings ...
+  :certificate => File.read("/path/to/rsacert.pem"),
+  :private_key => File.read("/path/to/rsaprivkey.pem"),
+  :security    => {
+    authn_requests_signed:     true,
+    want_assertions_signed:    true,
+    want_assertions_encrypted: true,
+    metadata_signed:           true,
+    digest_method:             "XMLSecurity::Document::SHA256",
+    signature_method:          "XMLSecurity::Document::RSA_SHA256",
+  },
+}
 ```
 
 ## Developer
