@@ -5,6 +5,8 @@ on: [pull_request]
 jobs:
   lint:
     runs-on: ubuntu-latest
+    env:
+      BUNDLE_GEMFILE: Gemfile.dev
     steps:
       - uses: actions/checkout@v4
         with:
@@ -14,9 +16,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-          ruby-version: 3.2
 
       - name: Run standardrb
         run: |
-          gem install standard
-          standardrb
+          bundle exec standardrb

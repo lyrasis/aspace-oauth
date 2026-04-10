@@ -61,7 +61,7 @@ module AspaceOauth
 
     host = config[:config][:url]
     path = config[:config][:logout_url]
-    params = { service: AppConfig[:frontend_proxy_url] }
+    params = {service: AppConfig[:frontend_proxy_url]}
     build_url(host, path, params)
   end
 
@@ -105,11 +105,11 @@ module AspaceOauth
 
   def self.encode_user_login_token(auth_hash)
     payload = JSON.generate({
-                              created_by: "aspace-oauth-#{auth_hash[:provider]}",
-                              created_at: DateTime.now.rfc3339,
-                              user_info: auth_hash[:info]
-                            })
+      created_by: "aspace-oauth-#{auth_hash[:provider]}",
+      created_at: DateTime.now.rfc3339,
+      user_info: auth_hash[:info]
+    })
     signature = OpenSSL::HMAC.hexdigest("SHA256", get_oauth_shared_secret, payload)
-    JSON.generate({ signature: signature, payload: payload })
+    JSON.generate({signature: signature, payload: payload})
   end
 end

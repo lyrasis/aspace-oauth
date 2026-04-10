@@ -121,8 +121,8 @@ class ASOauth
       db[:user]
         .filter(Sequel.~(is_system_user: 1))
         .filter(Sequel.like(
-                  Sequel.function(:lower, :username), "#{query}%"
-                ))
+          Sequel.function(:lower, :username), "#{query}%"
+        ))
         .filter(Sequel.like(:source, name))
         .select(:username)
         .limit(AppConfig[:max_usernames_per_source].to_i)
