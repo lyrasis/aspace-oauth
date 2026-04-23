@@ -21,15 +21,16 @@ Enabling this plugin will:
 
 ## Version Compatibility
 
-This plugin tracks ArchivesSpace releases. The `master` branch supports the current ArchivesSpace version. For earlier versions, use the corresponding [tag](https://github.com/lyrasis/aspace-oauth/tags):
+This plugin tracks ArchivesSpace releases. The `master` branch supports the current ArchivesSpace version (note: there may be a short 1-2 week lag post release). For specific versions use the corresponding [tag](https://github.com/lyrasis/aspace-oauth/tags):
 
 | Plugin Version | ArchivesSpace Version |
-|----------------|----------------------|
-| v4.0.0+        | 4.0.0+               |
-| v3.5.x         | 3.5.x                |
-| v3.2.0         | 3.2.x                |
+|----------------|-----------------------|
+| v4.2.0         | 4.2.0                 |
+| v4.0.0         | 4.0.0-4.1.x           |
+| v3.5.x         | 3.5.x                 |
+| v3.2.0         | 3.2.x                 |
 
-See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
+See [CHANGELOG.md](CHANGELOG.md) for detailed release notes and [UPGRADING.md](UPGRADING.md) for any upgrade instructions.
 
 ## Installation
 
@@ -71,26 +72,12 @@ AppConfig[:authentication_sources] = [
     # metadata_parser_url: "https://login.somewhere.edu:4443/idp/shibboleth",
     config: {
       :assertion_consumer_service_url     => "http://localhost:3000/auth/saml/callback",
-      :issuer                             => "http://localhost:3000/auth/saml/metadata",
+      :sp_entity_id                       => "http://localhost:3000/auth/saml/metadata",
       :name_identifier_format             => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
       # THESE ARE OPTIONAL IF USING METADATA URL (but can be used to override parsed metadata)
-      :idp_sso_target_url                 => "http://localhost/simplesaml/saml2/idp/SSOService.php",
+      :idp_sso_service_url                => "http://localhost/simplesaml/saml2/idp/SSOService.php",
       :idp_cert_fingerprint               => "119b9e027959cdb7c662cfd075d9e2ef384e445f",
-      :idp_cert_fingerprint_validator     => lambda { |fingerprint| fingerprint },
-      # OPTIONAL: for encrypted assertions
-      :certificate                        => "PUBLIC CERT",
-      :private_key                        => "PRIVATE KEY",
-      # OPTIONAL: may be required by IDP (used with certificate and private_key)
-      :security                           => {
-        authn_requests_signed:     true,
-        want_assertions_signed:    true,
-        want_assertions_encrypted: true,
-        metadata_signed:           true,
-        # XMLSecurity::Document strings for digest and signature will be resolved to constant
-        digest_method:             "XMLSecurity::Document::SHA256",
-        signature_method:          "XMLSecurity::Document::RSA_SHA256",
-        embed_sign:                true,
-      },
+      # OPTIONAL: see "SAML certs" section for certificate, private_key, and security options
       :attribute_statements => {
         email: ["urn:oid:0.9.2342.19200300.100.1.3"],
       },
@@ -108,13 +95,13 @@ AppConfig[:authentication_sources] = [
       login_url: '/cas/login',
       logout_url: '/cas/logout',
       service_validate_url: '/cas/serviceValidate',
-      uid_key: 'user',
+      uid_field: 'user',
       email_key: 'email'
       # more cas keys and options at: https://github.com/dlindahl/omniauth-cas
       #
       # if your server does not return an email address, you can add one
       # here using the fetch_raw_info option.
-      fetch_raw_info: ->(s, o, t, user_info) {  { email: "#{user_info['user']}@ivory-tower.edu" } }
+      fetch_raw_info: ->(s, o, t, user_info, _body) {  { email: "#{user_info['user']}@ivory-tower.edu" } }
     }
   }
 ]
@@ -135,25 +122,66 @@ Add / change providers as needed and refer to the project documentation
 for configuration details. There are many more configuration options than shown
 above.
 
+## SAML testing
+
 For testing SAML there is a helpful docker image:
 
 ```bash
 docker run --name=test-saml-idp -d \
-  --net=host \
+  -p 8080:8080 -p 8443:8443 \
   -e SIMPLESAMLPHP_SP_ENTITY_ID=http://localhost:3000 \
   -e SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localhost:3000/auth/saml/callback \
   kristophjunge/test-saml-idp
 ```
 
-The test SAML service will be available at: `http://localhost`.
+The test SAML service will be available at: `http://localhost:8080/simplesaml`
+(admin password: `secret`). Test users: `user1`/`user1pass` and `user2`/`user2pass`.
 
-## SAML
+The corresponding ArchivesSpace configuration:
 
-To generate a cert / key use a command like:
+```ruby
+{
+  model: 'ASOauth',
+  provider: 'saml',
+  label: 'SAML Sign In',
+  slo_link: false,
+  config: {
+    :assertion_consumer_service_url => "http://localhost:3000/auth/saml/callback",
+    :sp_entity_id                  => "http://localhost:3000",
+    :name_identifier_format        => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
+    :idp_sso_service_url           => "http://localhost:8080/simplesaml/saml2/idp/SSOService.php",
+    :idp_cert_fingerprint          => "119b9e027959cdb7c662cfd075d9e2ef384e445f",
+  }
+}
+```
+
+## SAML certs
+
+A certificate and private key can be generated for the SP to sign authentication
+requests, sign metadata, and decrypt encrypted assertions from the IDP. The
+public certificate is shared with your IDP.
 
 ```bash
 openssl genrsa -out rsaprivkey.pem 2048
 openssl req -new -x509 -nodes -days 3650 -key rsaprivkey.pem -out rsacert.pem
+```
+
+Then reference them in the SAML config:
+
+```ruby
+config: {
+  # ... other SAML settings ...
+  :certificate => File.read("/path/to/rsacert.pem"),
+  :private_key => File.read("/path/to/rsaprivkey.pem"),
+  :security    => {
+    authn_requests_signed:     true,
+    want_assertions_signed:    true,
+    want_assertions_encrypted: true,
+    metadata_signed:           true,
+    digest_method:             "XMLSecurity::Document::SHA256",
+    signature_method:          "XMLSecurity::Document::RSA_SHA256",
+  },
+}
 ```
 
 ## Developer
@@ -196,8 +224,29 @@ For now this is a manual process:
 
 ```bash
 cargo install git-cliff
-git-cliff -o CHANGELOG.md
 ```
+
+1. Finish testing on the branch
+2. Generate the changelog for the upcoming version on the same branch:
+
+```bash
+git-cliff --tag ${version} -o CHANGELOG.md
+git add CHANGELOG.md
+git commit -m "Update CHANGELOG for ${version}"
+git push
+```
+
+1. Open the PR to master and merge (the changelog ships with the changes it describes)
+2. Tag master after merge:
+
+```bash
+git checkout master && git pull
+git tag ${version}
+git push origin ${version}
+```
+
+If additional commits land on the branch after step 2 (review fixups, rebases),
+re-run `git-cliff --tag ${version} -o CHANGELOG.md` before merging.
 
 ## License
 

@@ -1,12 +1,31 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
-## [Unreleased]
+
+## [4.2.0] - 2026-04-23
 
 ### Changes
 
 - Use jruby for tests and add more for auth (#56)
-- Use cliff to generate changelog
+- Switch to git-cliff for changelog generation (#61)
+
+### Dependencies
+
+- Updates for ASpace 4.2.0
+
+### Features
+
+- Add more and re-organize helpers
+- Add rails omniauth csrf protection
+
+### Other
+
+- Lint fixes
+- Don't leak login info
+- Improve the state of the saml testing docs
+- Align the lint workflow with local dev docs
+- README tweaks
+
 ## [4.0.0-1] - 2025-08-20
 
 ### Bug Fixes
@@ -20,6 +39,7 @@ All notable changes to this project will be documented in this file.
 ### Reverted
 
 - Revert "Pr/dl maura/49 (#51)" (#52)
+
 ## [4.0.0] - 2025-04-08
 
 ### Dependencies
@@ -33,6 +53,7 @@ All notable changes to this project will be documented in this file.
 - test fixt for formatting
 - header needs to be fixed again
 - align right
+
 ## [3.5.1] - 2024-10-29
 
 ### Features
@@ -43,6 +64,7 @@ All notable changes to this project will be documented in this file.
 ### Other
 
 - Make sure those keys last more than a month
+
 ## [3.5.0] - 2024-06-17
 
 ### Changes
@@ -59,16 +81,19 @@ All notable changes to this project will be documented in this file.
 - Support deployments with separate back/frontend
 - Document the :oauth_shared_secret config option
 - Re-apply header_global template changes to latest version
+
 ## [3.2.0] - 2022-06-03
 
 ### Features
 
 - Add option to use email as username
+
 ## [3.1.1] - 2022-01-05
 
 ### Dependencies
 
 - Update Gemfile
+
 ## [2.8.1] - 2021-09-01
 
 ### Bug Fixes
@@ -119,4 +144,3 @@ All notable changes to this project will be documented in this file.
 - Set additional user info if available
 - Force downcase of usernames created via the plugin, fixes #18
 - Locks addressable to 2.7
-

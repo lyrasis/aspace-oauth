@@ -3,6 +3,8 @@
 require_relative "../test_helper"
 
 class AspaceOauthTest < Minitest::Test
+  ResponseObject = Struct.new(:name_id)
+
   def test_saml_logout_url_with_idp_slo_service_url
     saml_config = sample_saml_config_with_slo
     setup_app_config_with_oauth_definitions([saml_config])
@@ -112,5 +114,49 @@ class AspaceOauthTest < Minitest::Test
 
     expected_url = "https://example.com/auth/saml/spslo"
     assert_equal expected_url, result
+  end
+
+  def test_get_info_returns_empty_hash_for_missing_info
+    assert_equal({}, AspaceOauth.get_info(nil))
+    assert_equal({}, AspaceOauth.get_info({}))
+  end
+
+  def test_get_extra_returns_empty_hash_for_missing_extra
+    assert_equal({}, AspaceOauth.get_extra(nil))
+    assert_equal({}, AspaceOauth.get_extra({}))
+  end
+
+  def test_get_email_returns_nil_for_missing_auth_hash_sections
+    assert_nil AspaceOauth.get_email(nil)
+    assert_nil AspaceOauth.get_email({})
+  end
+
+  def test_get_email_prefers_info_email
+    auth = {
+      info: {email: "info@example.com"},
+      extra: {email: "extra@example.com"}
+    }
+
+    assert_equal "info@example.com", AspaceOauth.get_email(auth)
+  end
+
+  def test_get_email_falls_back_to_extra_and_response_object
+    auth_with_extra = {
+      info: {},
+      extra: {email: "extra@example.com"}
+    }
+    auth_with_response_object = {
+      info: {},
+      extra: {response_object: ResponseObject.new("nameid@example.com")}
+    }
+
+    assert_equal "extra@example.com", AspaceOauth.get_email(auth_with_extra)
+    assert_equal "nameid@example.com", AspaceOauth.get_email(auth_with_response_object)
+  end
+
+  def test_get_uid_handles_missing_auth
+    assert_nil AspaceOauth.get_uid(nil)
+    assert_nil AspaceOauth.get_uid({})
+    assert_equal "abc123", AspaceOauth.get_uid({uid: "abc123"})
   end
 end

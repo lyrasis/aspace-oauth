@@ -1,6 +1,8 @@
 *.md
 !CHANGELOG.md
+!UPGRADING.md
 !README.md
+*.lock
 *.swp
 .bundle/
 Gemfile.lock

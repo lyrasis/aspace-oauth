@@ -17,17 +17,17 @@ class OauthController < ApplicationController
   # user-provided password can't be used to forge oauth logins.
   def create
     backend_session = nil
+    info = AspaceOauth.get_info(auth_hash)
     email = AspaceOauth.get_email(auth_hash)
-    username = AspaceOauth.use_uid? ? auth_hash.uid : email
+    username = AspaceOauth.use_uid? ? AspaceOauth.get_uid(auth_hash) : email
 
-    puts "Received callback for user: #{username}" if AspaceOauth.debug?
+    $stdout.puts "Received callback for oauth provider: #{params[:provider]}" if AspaceOauth.debug?
 
-    if email && username
+    if email && username && info.any?
       username = username.split("@").first unless AspaceOauth.username_is_email?
-      auth_hash[:info][:username] = username.downcase # checked in backend
-      auth_hash[:info][:email] = email # ensure email is set in info
+      info[:username] = username.downcase # checked in backend
+      info[:email] = email # ensure email is set in info
       login_token = AspaceOauth.encode_user_login_token(auth_hash)
-      puts "Generated token: #{login_token}" if AspaceOauth.debug?
 
       backend_session = User.login(username, login_token)
     end

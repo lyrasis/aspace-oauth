@@ -52,14 +52,13 @@ class ASOauth
       # the frontend and backend are running in the same JVM (which is the
       # default) we can pick up the generated value.
       secret = java.lang.System.get_property("aspace.config.oauth_shared_secret")
-      unless secret.nil?
-        AppConfig[:oauth_shared_secret] = secret
-      end
+      AppConfig[:oauth_shared_secret] = secret unless secret.nil?
     end
 
     unless secret.is_a?(String) && (secret.length > 0)
       raise ASOauthException.new(":oauth_shared_secret config option is not set")
     end
+
     secret
   end
 
