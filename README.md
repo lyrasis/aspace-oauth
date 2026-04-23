@@ -23,14 +23,12 @@ Enabling this plugin will:
 
 This plugin tracks ArchivesSpace releases. The `master` branch supports the current ArchivesSpace version (note: there may be a short 1-2 week lag post release). For specific versions use the corresponding [tag](https://github.com/lyrasis/aspace-oauth/tags):
 
-
 | Plugin Version | ArchivesSpace Version |
 |----------------|-----------------------|
 | v4.2.0         | 4.2.0                 |
 | v4.0.0         | 4.0.0-4.1.x           |
 | v3.5.x         | 3.5.x                 |
 | v3.2.0         | 3.2.x                 |
-
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed release notes and [UPGRADING.md](UPGRADING.md) for any upgrade instructions.
 
@@ -229,20 +227,26 @@ cargo install git-cliff
 ```
 
 1. Finish testing on the branch
-2. Create PR and merge to master
-3. Generate changelog on a new branch:
+2. Generate the changelog for the upcoming version on the same branch:
+
+```bash
+git-cliff --tag ${version} -o CHANGELOG.md
+git add CHANGELOG.md
+git commit -m "Update CHANGELOG for ${version}"
+git push
+```
+
+1. Open the PR to master and merge (the changelog ships with the changes it describes)
+2. Tag master after merge:
 
 ```bash
 git checkout master && git pull
 git tag ${version}
-git checkout -b changelog-${version}
-git-cliff -o CHANGELOG.md
-git add CHANGELOG.md
-git commit -m "Update CHANGELOG for ${version}"
-git push origin changelog-${version} --tags
+git push origin ${version}
 ```
 
-4. Create PR for the changelog, merge to master
+If additional commits land on the branch after step 2 (review fixups, rebases),
+re-run `git-cliff --tag ${version} -o CHANGELOG.md` before merging.
 
 ## License
 
