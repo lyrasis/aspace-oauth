@@ -25,6 +25,7 @@ All notable changes to this project will be documented in this file.
 - Improve the state of the saml testing docs
 - Align the lint workflow with local dev docs
 - README tweaks
+- Prevent autoloading of dependencies
 
 ## [4.0.0-1] - 2025-08-20
 
