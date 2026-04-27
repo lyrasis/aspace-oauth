@@ -1,14 +1,18 @@
 # frozen_string_literal: true
 
+require "omniauth"
+require "omniauth/rails_csrf_protection"
+require "omniauth-saml"
+require "omniauth-cas"
+
 require_relative "lib/aspace_oauth"
+
 oauth_definitions = AppConfig[:authentication_sources].find_all do |as|
   as[:model] == "ASOauth"
 end
 raise "OmniAuth plugin enabled but no definitions provided =(" unless oauth_definitions.any?
 
-unless AppConfig.has_key? :oauth_debug
-  AppConfig[:oauth_debug] = false
-end
+AppConfig[:oauth_debug] = false unless AppConfig.has_key? :oauth_debug
 
 # oauth_shared_secret is used to authenticate internal login requests from the
 # frontend to the backend. It needs to be explicitly specified if the backend is
@@ -28,7 +32,6 @@ AppConfig[:oauth_definitions] = oauth_definitions
 ArchivesSpace::Application.extend_aspace_routes(
   File.join(File.dirname(__FILE__), "routes.rb")
 )
-require "omniauth"
 
 Rails.application.config.middleware.use OmniAuth::Builder do
   oauth_definitions.each do |oauth_definition|
