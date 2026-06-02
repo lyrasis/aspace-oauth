@@ -381,5 +381,4 @@ class ASOauthTest < Minitest::Test
 
     assert_equal "existinguser", result[:username]
   end
-
 end
