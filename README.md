@@ -184,11 +184,11 @@ config: {
 }
 ```
 
-## Prevent SSO User registration
+## Prevent New User registration
 
 To prevent user registration for new users logging in with SSO, set
 ```ruby
-AppConfig[:aspace_oauth_allow_sso_user_registration] = false
+AppConfig[:oauth_allow_user_registration] = false
 ```
 
 ## Developer
