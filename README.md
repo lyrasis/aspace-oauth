@@ -184,6 +184,13 @@ config: {
 }
 ```
 
+## Prevent New User registration
+
+To prevent user registration for new users logging in with SSO, set
+```ruby
+AppConfig[:oauth_allow_user_registration] = false
+```
+
 ## Developer
 
 ```bash

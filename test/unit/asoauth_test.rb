@@ -29,6 +29,25 @@ module JSONModel
   end
 end
 
+# Mock DB module
+module DB
+  def self.open
+    yield self if block_given?
+  end
+end
+
+# Mock Sequel module
+module Sequel
+  def self.function(*args)
+    # Returns a placeholder that the stub dataset will ignore
+    :sequel_function
+  end
+
+  def self.~(*args)
+    :sequel_not
+  end
+end
+
 # Load the ASOauth model
 require_relative "../../backend/model/asoauth"
 
@@ -324,4 +343,43 @@ class ASOauthTest < Minitest::Test
 
     assert_nil result
   end
+
+  # Tests for AppConfig[:oauth_allow_user_registration] behaviour
+  def test_authenticate_skips_db_check_when_registration_allowed
+    AppConfig[:oauth_allow_user_registration] = true
+    oauth = ASOauth.new(provider: "saml")
+    token = generate_login_token(username: "newuser")
+
+    # DB.open must never be called when registration is allowed
+    DB.expects(:open).never
+
+    result = oauth.authenticate("newuser", token)
+
+    assert_equal "newuser", result[:username]
+  end
+
+  def test_authenticate_returns_nil_for_unknown_user_when_registration_disabled
+    AppConfig[:oauth_allow_user_registration] = false
+    oauth = ASOauth.new(provider: "saml")
+    token = generate_login_token(username: "unknownuser")
+
+    DB.stubs(:[]).returns(stub(where: stub(count: 0)))
+
+    result = oauth.authenticate("unknownuser", token)
+
+    assert_nil result
+  end
+
+  def test_authenticate_succeeds_for_known_user_when_registration_disabled
+    AppConfig[:oauth_allow_user_registration] = false
+    oauth = ASOauth.new(provider: "saml")
+    token = generate_login_token(username: "existinguser")
+
+    DB.stubs(:[]).returns(stub(where: stub(count: 1)))
+
+    result = oauth.authenticate("existinguser", token)
+
+    assert_equal "existinguser", result[:username]
+  end
+
 end

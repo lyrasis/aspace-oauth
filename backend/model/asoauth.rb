@@ -32,6 +32,21 @@ class ASOauth
 
     return nil unless username == info["username"].downcase
 
+    # Reject authentication if user does not already exist in the database
+    # and new user registration is not allowed
+    if AppConfig.has_key?(:oauth_allow_user_registration) && AppConfig[:oauth_allow_user_registration] == false
+      existing_user = DB.open do |db|
+        db[:user]
+          .where(Sequel.function(:lower, :username) => username.downcase)
+          .count > 0
+      end
+
+      unless existing_user
+        Log.warn("ASOauth: rejected authentication for unknown user: #{username}")
+        return nil
+      end
+    end
+
     JSONModel(:user).from_hash(
       username: username,
       name: info["name"],
