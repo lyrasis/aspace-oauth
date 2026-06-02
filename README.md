@@ -187,6 +187,7 @@ config: {
 ## Prevent New User registration
 
 To prevent user registration for new users logging in with SSO, set
+
 ```ruby
 AppConfig[:oauth_allow_user_registration] = false
 ```
@@ -209,7 +210,7 @@ bundle install --gemfile=Gemfile.dev
 bundle exec --gemfile=Gemfile.dev rake test
 
 # Run tests with linting
-bundle exec --gemfile=Gemfile.dev rake lint
+bundle exec --gemfile=Gemfile.dev rake lint_fix
 
 # Run individual test file
 bundle exec --gemfile=Gemfile.dev ruby -Itest test/unit/aspace_oauth_test.rb

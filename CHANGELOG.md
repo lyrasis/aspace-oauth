@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Features
+
+- Add optional AppConfig to prevent new user creation (#67)
+
 ## [4.2.0] - 2026-04-23
 
 ### Changes

@@ -1,9 +1,9 @@
-name: Lint
+name: CI
 
 on: [pull_request]
 
 jobs:
-  lint:
+  ci:
     runs-on: ubuntu-latest
     env:
       BUNDLE_GEMFILE: Gemfile.dev
@@ -20,3 +20,7 @@ jobs:
       - name: Run standardrb
         run: |
           bundle exec standardrb
+
+      - name: Run tests
+        run: |
+          bundle exec rake test
