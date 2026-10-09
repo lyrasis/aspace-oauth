@@ -56,7 +56,7 @@ AppConfig[:authentication_sources] = [
     label: 'Institutional Sign In',
     slo_link: false,
     # METADATA URL: optional, use to download configuration
-    # metadata_parser_url: "https://login.somewhere.edu:4443/idp/shibboleth",
+     metadata_parser_url: "https://login.somewhere.com/federationmetadata/",
     config: {
       :assertion_consumer_service_url     => "http://localhost:3000/auth/saml/callback",
       :issuer                             => "http://localhost:3000/auth/saml/metadata",
@@ -80,7 +80,11 @@ AppConfig[:authentication_sources] = [
         embed_sign:                true,
       },
       :attribute_statements => {
-        email: ["urn:oid:0.9.2342.19200300.100.1.3"],
+        email:      ["netIDEmail"],
+        first_name: ["givenName"],
+        last_name:  ["sn"],
+        name:       ["displayName", "uid"],
+        username:   ["uid"],
       },
     }
   },
