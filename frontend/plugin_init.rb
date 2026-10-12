@@ -33,6 +33,8 @@ ArchivesSpace::Application.extend_aspace_routes(
   File.join(File.dirname(__FILE__), "routes.rb")
 )
 
+OmniAuth.config.path_prefix = AspaceOauth.omniauth_path_prefix
+
 Rails.application.config.middleware.use OmniAuth::Builder do
   oauth_definitions.each do |oauth_definition|
     verify_ssl = oauth_definition.fetch(:verify_ssl, true)
