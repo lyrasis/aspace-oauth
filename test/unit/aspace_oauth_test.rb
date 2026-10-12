@@ -159,4 +159,20 @@ class AspaceOauthTest < Minitest::Test
     assert_nil AspaceOauth.get_uid({})
     assert_equal "abc123", AspaceOauth.get_uid({uid: "abc123"})
   end
+
+  def test_omniauth_path_prefix_without_frontend_proxy_prefix
+    assert_equal "/auth", AspaceOauth.omniauth_path_prefix
+  end
+
+  def test_omniauth_path_prefix_at_root
+    AppConfig[:frontend_proxy_prefix] = "/"
+
+    assert_equal "/auth", AspaceOauth.omniauth_path_prefix
+  end
+
+  def test_omniauth_path_prefix_with_frontend_proxy_prefix
+    AppConfig[:frontend_proxy_prefix] = "/staff/"
+
+    assert_equal "/staff/auth", AspaceOauth.omniauth_path_prefix
+  end
 end

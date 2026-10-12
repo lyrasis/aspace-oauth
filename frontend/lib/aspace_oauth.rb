@@ -81,6 +81,12 @@ module AspaceOauth
     end
   end
 
+  # OmniAuth handles the request (/auth/:provider) and callback phases itself, so
+  # it has to see the same staff UI prefix as the plugin routes (e.g. /staff/auth)
+  def self.omniauth_path_prefix
+    "#{AppConfig[:frontend_proxy_prefix] || "/"}auth"
+  end
+
   # Feature and config flags
   def self.debug?
     AppConfig.has_key?(:oauth_debug) && AppConfig[:oauth_debug] == true
