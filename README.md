@@ -155,6 +155,48 @@ The corresponding ArchivesSpace configuration:
 }
 ```
 
+### Testing with the ArchivesSpace Docker configuration package
+
+The [Docker configuration package](https://docs.archivesspace.org/administration/docker/)
+serves the staff UI under `/staff` behind an nginx proxy on port 80, so the
+SP URLs include that prefix and the test IdP needs a port other than 8080:
+
+```bash
+docker run --name=test-saml-idp -d \
+  -p 8081:8080 -p 8443:8443 \
+  -e SIMPLESAMLPHP_SP_ENTITY_ID=http://localhost/staff \
+  -e SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localhost/staff/auth/saml/callback \
+  kristophjunge/test-saml-idp
+```
+
+Copy the plugin to the package's `plugins` directory, add
+`ASPACE_INITIALIZE_PLUGINS=aspace-oauth` to `.env` so its gems are installed
+when the container starts, and add to `config/config.rb`:
+
+```ruby
+AppConfig[:plugins] << "aspace-oauth"
+AppConfig[:authentication_sources] = [
+  {
+    model: 'ASOauth',
+    provider: 'saml',
+    label: 'SAML Sign In',
+    slo_link: false,
+    config: {
+      :assertion_consumer_service_url => "http://localhost/staff/auth/saml/callback",
+      :sp_entity_id                  => "http://localhost/staff",
+      :name_identifier_format        => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
+      :idp_sso_service_url           => "http://localhost:8081/simplesaml/saml2/idp/SSOService.php",
+      :idp_cert_fingerprint          => "119b9e027959cdb7c662cfd075d9e2ef384e445f",
+    }
+  }
+]
+```
+
+Then `docker compose up -d`, open `http://localhost/staff` and use "SAML Sign
+In" with one of the test users. The sign-in routes follow
+`AppConfig[:frontend_proxy_prefix]`, so with the default package settings
+they are served under `/staff/auth/...`.
+
 ## SAML certs
 
 A certificate and private key can be generated for the SP to sign authentication
