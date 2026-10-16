@@ -71,6 +71,8 @@ AppConfig[:authentication_sources] = [
     # METADATA URL: optional, use to download configuration
     # metadata_parser_url: "https://login.somewhere.edu:4443/idp/shibboleth",
     config: {
+      # Optional path_prefix, required when running on /staff/ prefix
+      # path_prefix: "/staff/auth", # <- or use frontend_proxy_prefix (whatever is appropriate)
       :assertion_consumer_service_url     => "http://localhost:3000/auth/saml/callback",
       :sp_entity_id                       => "http://localhost:3000/auth/saml/metadata",
       :name_identifier_format             => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
