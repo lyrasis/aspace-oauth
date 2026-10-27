@@ -1,5 +1,25 @@
 # Upgrading
 
+## Unreleased
+
+### `shared/_login` view override
+
+This plugin now overrides the core `shared/_login` view (to support
+`AppConfig[:oauth_replace_login_form]`). With the default settings it renders
+the standard ArchivesSpace login form, so most sites see no change.
+
+If another plugin (for example a local customization plugin) also overrides
+`shared/_login`, the plugin listed later in `AppConfig[:plugins]` wins. If
+`aspace-oauth` is listed after it, that plugin's login page is replaced by the
+standard form. To keep an SSO only login page, either:
+
+- set `AppConfig[:oauth_replace_login_form] = true` and remove the other
+  plugin's `shared/_login` override, or
+- list the other plugin after `aspace-oauth` in `AppConfig[:plugins]`.
+
+Custom login links that use GET `/auth/<provider>` do not work (see the
+v4.2.0 CSRF notes below). The built in replacement uses POST forms.
+
 ## v4.2.0
 
 For this release all OmniAuth dependencies have been upgraded to their latest major versions:

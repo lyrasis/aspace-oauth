@@ -94,6 +94,22 @@ module AspaceOauth
     AppConfig.has_key?(:oauth_username_is_email) && AppConfig[:oauth_username_is_email] == true
   end
 
+  def self.replace_login_form?
+    AppConfig.has_key?(:oauth_replace_login_form) && AppConfig[:oauth_replace_login_form] == true
+  end
+
+  # defaults to true so the local login form stays reachable unless disabled
+  def self.local_login_fallback?
+    !(AppConfig.has_key?(:oauth_local_login_fallback) && AppConfig[:oauth_local_login_fallback] == false)
+  end
+
+  # admin is exempt so it can still sign in when the IDP is unavailable
+  def self.password_login_blocked?(username)
+    AppConfig.has_key?(:oauth_allow_password_login) &&
+      AppConfig[:oauth_allow_password_login] == false &&
+      username.to_s.downcase != "admin"
+  end
+
   # Shared secret and token signing
   def self.get_oauth_shared_secret
     secret = AppConfig[:oauth_shared_secret] if AppConfig.has_key? :oauth_shared_secret
