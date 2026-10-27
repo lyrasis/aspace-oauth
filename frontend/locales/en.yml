@@ -1,0 +1,4 @@
+en:
+  plugins:
+    aspace_oauth:
+      local_login: Sign in with a local account

@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 ### Features
 
 - Add optional AppConfig to prevent new user creation (#67)
+- Add optional AppConfig to replace the login form with SSO sign in buttons
+- Add optional AppConfig to block staff interface password login (except admin)
 
 ## [4.2.0] - 2026-04-23
 

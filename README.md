@@ -194,6 +194,36 @@ To prevent user registration for new users logging in with SSO, set
 AppConfig[:oauth_allow_user_registration] = false
 ```
 
+## SSO only login page
+
+```ruby
+# Replace the login page username / password form with a button per provider
+# (the header sign in link is then hidden)
+AppConfig[:oauth_replace_login_form] = true
+# Hide the "Sign in with a local account" link to the standard form (default: shown)
+AppConfig[:oauth_local_login_fallback] = false
+# Block staff interface password login, except admin (default: allowed)
+AppConfig[:oauth_allow_password_login] = false
+# Core settings: hide the register and lost password links
+AppConfig[:allow_user_registration] = false
+AppConfig[:allow_password_reset] = false
+```
+
+The session expired pop-up keeps the standard form, so unsaved work is not lost
+to a redirect. The local account link text uses the
+`plugins.aspace_oauth.local_login` locale key.
+
+**Hiding the form does not disable password login.** The standard form is
+still at `/login`, and the backend API accepts passwords at
+`POST /users/:username/login`. `oauth_allow_password_login = false` blocks
+`/login` for everyone except `admin` (the way in when the IDP is unavailable),
+but API logins still work so API clients are not affected. Restrict the API by
+IP address or at the proxy. Also consider:
+
+- `AppConfig[:authentication_restricted_by_source] = true`, so SSO users can
+  not use an old local password.
+- Keeping `admin` as the only local account, with a strong password.
+
 ## Developer
 
 ```bash

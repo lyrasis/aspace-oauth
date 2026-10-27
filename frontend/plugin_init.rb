@@ -29,9 +29,30 @@ end
 
 # also used for ui [refactor]
 AppConfig[:oauth_definitions] = oauth_definitions
+
+# core login form (core views only, so not this plugin's override) for shared/_login
+begin
+  AspaceOauth::CORE_LOGIN_FORM = ActionView::LookupContext.new(
+    Rails.root.join("app", "views").to_s
+  ).find_template("login", ["shared"], true)
+rescue ActionView::MissingTemplate
+  raise "aspace-oauth: core login form app/views/shared/_login.html.erb not found, " \
+        "this ArchivesSpace version is not supported by frontend/views/shared/_login.html.erb"
+end
+
 ArchivesSpace::Application.extend_aspace_routes(
   File.join(File.dirname(__FILE__), "routes.rb")
 )
+
+# staff interface password login, checked after routing so every path to
+# session#login is covered. API logins go straight to the backend.
+Rails.application.config.to_prepare do
+  SessionController.before_action(only: :login) do |controller|
+    if AspaceOauth.password_login_blocked?(controller.params[:username])
+      controller.render json: {error: "Password login is disabled"}, status: :forbidden
+    end
+  end
+end
 
 Rails.application.config.middleware.use OmniAuth::Builder do
   oauth_definitions.each do |oauth_definition|
