@@ -266,35 +266,24 @@ gem install overcommit && overcommit --install && overcommit --sign pre-commit
 bundle exec --gemfile=Gemfile.dev rake lint_fix
 ```
 
-## CHANGELOG generation
+## CHANGELOG
 
-For now this is a manual process:
+`CHANGELOG.md` is maintained by hand. Add an entry under `## [Unreleased]` in
+the same PR as the change it describes, grouped under `### Features`,
+`### Bug Fixes`, `### Changes` or `### Dependencies`.
 
-```bash
-cargo install git-cliff
-```
+To release:
 
-1. Finish testing on the branch
-2. Generate the changelog for the upcoming version on the same branch:
-
-```bash
-git-cliff --tag ${version} -o CHANGELOG.md
-git add CHANGELOG.md
-git commit -m "Update CHANGELOG for ${version}"
-git push
-```
-
-1. Open the PR to master and merge (the changelog ships with the changes it describes)
-2. Tag master after merge:
+1. On a branch, rename `## [Unreleased]` to `## [x.y.z] - YYYY-MM-DD` and
+   add a new empty `## [Unreleased]` section above it
+2. Open the PR to master and merge
+3. Tag master after merge:
 
 ```bash
 git checkout master && git pull
-git tag ${version}
-git push origin ${version}
+git tag vx.y.z
+git push origin vx.y.z
 ```
-
-If additional commits land on the branch after step 2 (review fixups, rebases),
-re-run `git-cliff --tag ${version} -o CHANGELOG.md` before merging.
 
 ## License
 
