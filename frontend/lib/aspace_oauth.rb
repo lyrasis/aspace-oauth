@@ -3,6 +3,24 @@
 require "date"
 
 module AspaceOauth
+  # Frontend config defaults, applied by plugin_init.rb for any key not set in
+  # config.rb. oauth_allow_user_registration is backend only, see
+  # backend/plugin_init.rb. oauth_shared_secret is handled in plugin_init.rb.
+  CONFIG_DEFAULTS = {
+    oauth_debug: false,
+    oauth_idtype: :email,
+    oauth_username_is_email: false,
+    oauth_replace_login_form: false,
+    oauth_local_login_fallback: true,
+    oauth_allow_password_login: true
+  }.freeze
+
+  def self.set_config_defaults
+    CONFIG_DEFAULTS.each do |key, value|
+      AppConfig[key] = value unless AppConfig.has_key?(key)
+    end
+  end
+
   # Auth hash extraction
   def self.get_auth_section(auth, section)
     return {} unless auth.respond_to?(:[])
@@ -81,33 +99,36 @@ module AspaceOauth
     end
   end
 
-  # Feature and config flags
+  # Feature and config flags (defaults set by set_config_defaults)
   def self.debug?
-    AppConfig.has_key?(:oauth_debug) && AppConfig[:oauth_debug] == true
+    AppConfig[:oauth_debug] == true
   end
 
   def self.use_uid?
-    AppConfig.has_key?(:oauth_idtype) && AppConfig[:oauth_idtype] == :uid
+    AppConfig[:oauth_idtype] == :uid
   end
 
   def self.username_is_email?
-    AppConfig.has_key?(:oauth_username_is_email) && AppConfig[:oauth_username_is_email] == true
+    AppConfig[:oauth_username_is_email] == true
   end
 
   def self.replace_login_form?
-    AppConfig.has_key?(:oauth_replace_login_form) && AppConfig[:oauth_replace_login_form] == true
+    AppConfig[:oauth_replace_login_form] == true
   end
 
-  # defaults to true so the local login form stays reachable unless disabled
   def self.local_login_fallback?
-    !(AppConfig.has_key?(:oauth_local_login_fallback) && AppConfig[:oauth_local_login_fallback] == false)
+    AppConfig[:oauth_local_login_fallback] == true
   end
 
-  # admin is exempt so it can still sign in when the IDP is unavailable
+  # when false only admin can use password login
+  def self.allow_password_login?
+    AppConfig[:oauth_allow_password_login] == true
+  end
+
+  # admin is exempt so it can still sign in when the IDP is unavailable.
+  # normalized like the backend (strip, downcase) so "admin " is still admin.
   def self.password_login_blocked?(username)
-    AppConfig.has_key?(:oauth_allow_password_login) &&
-      AppConfig[:oauth_allow_password_login] == false &&
-      username.to_s.downcase != "admin"
+    !allow_password_login? && username.to_s.strip.downcase != "admin"
   end
 
   # Shared secret and token signing

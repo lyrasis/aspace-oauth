@@ -25,7 +25,7 @@ This plugin tracks ArchivesSpace releases. The `master` branch supports the curr
 
 | Plugin Version | ArchivesSpace Version |
 |----------------|-----------------------|
-| v4.2.0         | 4.2.0                 |
+| v4.2.0         | 4.2.0-4.2.1           |
 | v4.0.0         | 4.0.0-4.1.x           |
 | v3.5.x         | 3.5.x                 |
 | v3.2.0         | 3.2.x                 |
@@ -191,6 +191,7 @@ config: {
 To prevent user registration for new users logging in with SSO, set
 
 ```ruby
+# Create an ArchivesSpace user on first SSO sign in (default: true)
 AppConfig[:oauth_allow_user_registration] = false
 ```
 
@@ -198,11 +199,11 @@ AppConfig[:oauth_allow_user_registration] = false
 
 ```ruby
 # Replace the login page username / password form with a button per provider
-# (the header sign in link is then hidden)
+# and hide the header sign in link (default: false)
 AppConfig[:oauth_replace_login_form] = true
-# Hide the "Sign in with a local account" link to the standard form (default: shown)
+# Show the "Sign in with a local account" link to the standard form (default: true)
 AppConfig[:oauth_local_login_fallback] = false
-# Block staff interface password login, except admin (default: allowed)
+# Allow staff interface password login, when false only admin (default: true)
 AppConfig[:oauth_allow_password_login] = false
 # Core settings: hide the register and lost password links
 AppConfig[:allow_user_registration] = false
@@ -211,7 +212,14 @@ AppConfig[:allow_password_reset] = false
 
 The session expired pop-up keeps the standard form, so unsaved work is not lost
 to a redirect. The local account link text uses the
-`plugins.aspace_oauth.local_login` locale key.
+`plugins.aspace_oauth.local_login` locale key (`plugins.aspace_oauth.admin_login`
+when password login is blocked).
+
+**Known limitation:** the session expired pop-up only offers password login, so
+with `oauth_allow_password_login = false` only `admin` can sign in from it.
+Other staff whose session expires while editing must sign in again from the
+login page and will lose unsaved changes. Consider raising
+`AppConfig[:session_expire_after_seconds]` to make this less likely.
 
 **Hiding the form does not disable password login.** The standard form is
 still at `/login`, and the backend API accepts passwords at

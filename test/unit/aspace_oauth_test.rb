@@ -209,4 +209,21 @@ class AspaceOauthTest < Minitest::Test
     refute AspaceOauth.password_login_blocked?("admin")
     refute AspaceOauth.password_login_blocked?("ADMIN")
   end
+
+  def test_password_login_not_blocked_for_admin_with_whitespace_when_disabled
+    AppConfig[:oauth_allow_password_login] = false
+
+    refute AspaceOauth.password_login_blocked?(" admin ")
+    refute AspaceOauth.password_login_blocked?("Admin\t")
+  end
+
+  def test_allow_password_login_defaults_to_true
+    assert AspaceOauth.allow_password_login?
+  end
+
+  def test_allow_password_login_when_disabled
+    AppConfig[:oauth_allow_password_login] = false
+
+    refute AspaceOauth.allow_password_login?
+  end
 end

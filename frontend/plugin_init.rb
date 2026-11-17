@@ -12,7 +12,7 @@ oauth_definitions = AppConfig[:authentication_sources].find_all do |as|
 end
 raise "OmniAuth plugin enabled but no definitions provided =(" unless oauth_definitions.any?
 
-AppConfig[:oauth_debug] = false unless AppConfig.has_key? :oauth_debug
+AspaceOauth.set_config_defaults
 
 # oauth_shared_secret is used to authenticate internal login requests from the
 # frontend to the backend. It needs to be explicitly specified if the backend is
