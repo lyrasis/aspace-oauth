@@ -60,6 +60,12 @@ module AspaceOauth
     auth[:uid] || auth["uid"]
   end
 
+  # ArchivesSpace core (backend Username.value) rejects usernames containing
+  # any other character, e.g. the apostrophe in o'keeffe@example.com
+  def self.sanitize_username(username)
+    username.to_s.downcase.gsub(/[^a-z0-9\-_. @]/, "")
+  end
+
   # Provider config and URL helpers
   def self.get_oauth_config_for(strategy)
     AppConfig[:oauth_definitions].find { |oauth| oauth[:provider] == strategy }
