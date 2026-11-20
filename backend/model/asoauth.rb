@@ -33,8 +33,8 @@ class ASOauth
     return nil unless username == info["username"].downcase
 
     # Reject authentication if user does not already exist in the database
-    # and new user registration is not allowed
-    if AppConfig.has_key?(:oauth_allow_user_registration) && AppConfig[:oauth_allow_user_registration] == false
+    # and new user registration is not allowed (default set in plugin_init.rb)
+    unless AppConfig[:oauth_allow_user_registration] == true
       existing_user = DB.open do |db|
         db[:user]
           .where(Sequel.function(:lower, :username) => username.downcase)

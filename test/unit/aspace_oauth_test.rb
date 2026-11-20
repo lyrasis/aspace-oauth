@@ -159,4 +159,89 @@ class AspaceOauthTest < Minitest::Test
     assert_nil AspaceOauth.get_uid({})
     assert_equal "abc123", AspaceOauth.get_uid({uid: "abc123"})
   end
+
+  def test_sanitize_username_removes_apostrophe
+    assert_equal "melanie_okeeffe", AspaceOauth.sanitize_username("Melanie_O'Keeffe")
+    assert_equal "melanie_okeeffe@lb9.uscourts.gov", AspaceOauth.sanitize_username("Melanie_O'Keeffe@lb9.uscourts.gov")
+  end
+
+  def test_sanitize_username_removes_other_disallowed_characters
+    assert_equal "janearchives", AspaceOauth.sanitize_username("jane+archives")
+    assert_equal "abc", AspaceOauth.sanitize_username("a!b#c")
+  end
+
+  def test_sanitize_username_keeps_allowed_characters
+    assert_equal "j.doe-smith_2@example.edu", AspaceOauth.sanitize_username("J.Doe-Smith_2@example.edu")
+  end
+
+  def test_sanitize_username_handles_nil
+    assert_equal "", AspaceOauth.sanitize_username(nil)
+  end
+
+  def test_replace_login_form_defaults_to_false
+    refute AspaceOauth.replace_login_form?
+  end
+
+  def test_replace_login_form_when_enabled
+    AppConfig[:oauth_replace_login_form] = true
+
+    assert AspaceOauth.replace_login_form?
+  end
+
+  def test_replace_login_form_when_disabled
+    AppConfig[:oauth_replace_login_form] = false
+
+    refute AspaceOauth.replace_login_form?
+  end
+
+  def test_local_login_fallback_defaults_to_true
+    assert AspaceOauth.local_login_fallback?
+  end
+
+  def test_local_login_fallback_when_enabled
+    AppConfig[:oauth_local_login_fallback] = true
+
+    assert AspaceOauth.local_login_fallback?
+  end
+
+  def test_local_login_fallback_when_disabled
+    AppConfig[:oauth_local_login_fallback] = false
+
+    refute AspaceOauth.local_login_fallback?
+  end
+
+  def test_password_login_not_blocked_by_default
+    refute AspaceOauth.password_login_blocked?("jdoe")
+  end
+
+  def test_password_login_blocked_when_disabled
+    AppConfig[:oauth_allow_password_login] = false
+
+    assert AspaceOauth.password_login_blocked?("jdoe")
+    assert AspaceOauth.password_login_blocked?(nil)
+  end
+
+  def test_password_login_not_blocked_for_admin_when_disabled
+    AppConfig[:oauth_allow_password_login] = false
+
+    refute AspaceOauth.password_login_blocked?("admin")
+    refute AspaceOauth.password_login_blocked?("ADMIN")
+  end
+
+  def test_password_login_not_blocked_for_admin_with_whitespace_when_disabled
+    AppConfig[:oauth_allow_password_login] = false
+
+    refute AspaceOauth.password_login_blocked?(" admin ")
+    refute AspaceOauth.password_login_blocked?("Admin\t")
+  end
+
+  def test_allow_password_login_defaults_to_true
+    assert AspaceOauth.allow_password_login?
+  end
+
+  def test_allow_password_login_when_disabled
+    AppConfig[:oauth_allow_password_login] = false
+
+    refute AspaceOauth.allow_password_login?
+  end
 end

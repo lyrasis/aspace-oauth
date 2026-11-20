@@ -33,8 +33,11 @@ require_relative "../frontend/lib/aspace_oauth"
 # Test helper methods
 class Minitest::Test
   def setup
-    # Reset AppConfig for each test
+    # Reset AppConfig for each test, then apply the plugin defaults as
+    # the frontend and backend plugin_init.rb files do
     AppConfig.reset!
+    AspaceOauth.set_config_defaults
+    load File.expand_path("../backend/plugin_init.rb", __dir__)
   end
 
   def sample_saml_config

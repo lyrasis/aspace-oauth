@@ -25,7 +25,8 @@ class OauthController < ApplicationController
 
     if email && username && info.any?
       username = username.split("@").first unless AspaceOauth.username_is_email?
-      info[:username] = username.downcase # checked in backend
+      username = AspaceOauth.sanitize_username(username)
+      info[:username] = username # checked in backend
       info[:email] = email # ensure email is set in info
       login_token = AspaceOauth.encode_user_login_token(auth_hash)
 

@@ -1,0 +1,6 @@
+en:
+  plugins:
+    aspace_oauth:
+      local_login: Sign in with a local account
+      admin_login: Administrator sign in
+      password_login_admin_only: Password sign in is limited to the administrator account.

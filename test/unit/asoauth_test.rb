@@ -53,7 +53,7 @@ require_relative "../../backend/model/asoauth"
 
 class ASOauthTest < Minitest::Test
   def setup
-    AppConfig.reset!
+    super
     AppConfig[:oauth_shared_secret] = "test_secret_key_123"
     AppConfig[:max_usernames_per_source] = 10
   end

@@ -11,8 +11,8 @@
     >
       <%= render "shared/header_user" %>
 
-      <%# OAuth sign-in buttons (visible when logged out) %>
-      <% if AppConfig[:oauth_definitions] && !session[:user] %>
+      <%# OAuth sign-in buttons (visible when logged out, unless shown in the login form) %>
+      <% if AppConfig[:oauth_definitions] && !session[:user] && !AspaceOauth.replace_login_form? %>
         <% AppConfig[:oauth_definitions].each do |oauth_definition| %>
           <li class="d-flex align-items-center text-nowrap ml-2">
             <%= button_to oauth_definition[:label],
